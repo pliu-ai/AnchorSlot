@@ -1,0 +1,18 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  anchorslot-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: pip install -e . pytest
+      - run: pytest -q nnunetv2/tests/test_hierarchical_parallel_anchorslot.py
+      - run: python scripts/verify_protocol.py --config-root configs/cellmap

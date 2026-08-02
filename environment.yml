@@ -1,0 +1,13 @@
+name: anchorslot
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - pytorch=2.5.1
+  - pytorch-cuda=12.1
+  - pip:
+      - -e .
+      - pytest>=8,<9

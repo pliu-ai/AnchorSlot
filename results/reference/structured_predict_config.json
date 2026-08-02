@@ -1,0 +1,12 @@
+{
+    "model_folder": "/projects/weilab/liupeng/data/nnUNet/nnUNet_results/rahseg/structured_conditional/hierarchical_parallel_anchorslot_exp01/Dataset202_Dataset101_CellMap_model_high_res/nnUNetTrainerHierarchicalParallelAnchorSlot__nnUNetPlans__3d_lowres_large_patch",
+    "checkpoint": "checkpoint_best.pth",
+    "group_id": "all",
+    "run_all_groups": true,
+    "output_mode": "original",
+    "fixed_merge_mode": "mean",
+    "inference_padding_mode": "constant",
+    "inference_border_mirror_pad_size": "0",
+    "trainer_name": "nnUNetTrainerHierarchicalParallelAnchorSlot",
+    "num_dynamic_groups": 12
+}

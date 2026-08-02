@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use this software, cite the AnchorSlot paper and nnU-Net."
+title: "AnchorSlot: Hierarchical Parallel Anchor Slots for Structured Connectomics Segmentation"
+type: software
+authors:
+  - family-names: Liu
+    given-names: Peng
+version: 0.1.0
+date-released: 2026-08-02
+license: Apache-2.0
+repository-code: "https://github.com/luckieucas/AnchorSlot"
+keywords:
+  - connectomics
+  - segmentation
+  - nnU-Net
+  - hierarchical learning
+  - anchor slots
+references:
+  - type: article
+    authors:
+      - family-names: Isensee
+        given-names: Fabian
+      - family-names: Jaeger
+        given-names: Paul F.
+      - family-names: Kohl
+        given-names: Simon A. A.
+      - family-names: Petersen
+        given-names: Jens
+      - family-names: Maier-Hein
+        given-names: Klaus H.
+    title: "nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation"
+    journal: Nature Methods
+    year: 2021
+    volume: 18
+    issue: 2
+    start: 203
+    end: 211
+    doi: 10.1038/s41592-020-01008-z
