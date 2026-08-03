@@ -61,6 +61,10 @@ repository = "https://github.com/luckieucas/AnchorSlot"
 upstream = "https://github.com/MIC-DKFZ/nnUNet"
 
 [project.scripts]
+anchorslot_build_cellmap_validation_manifest = "nnunetv2.evaluation.cellmap_challenge:build_manifest_entry_point"
+anchorslot_build_cellmap_annotated_validation_manifest = "nnunetv2.evaluation.cellmap_challenge:build_annotated_manifest_entry_point"
+anchorslot_export_cellmap_submission = "nnunetv2.evaluation.cellmap_challenge:export_entry_point"
+anchorslot_validate_cellmap_submission = "nnunetv2.evaluation.cellmap_challenge:validate_entry_point"
 nnUNetv2_plan_and_preprocess = "nnunetv2.experiment_planning.plan_and_preprocess_entrypoints:plan_and_preprocess_entry"
 nnUNetv2_extract_fingerprint = "nnunetv2.experiment_planning.plan_and_preprocess_entrypoints:extract_fingerprint_entry"
 nnUNetv2_plan_experiment = "nnunetv2.experiment_planning.plan_and_preprocess_entrypoints:plan_experiment_entry"
@@ -88,6 +92,9 @@ dev = [
     "black",
     "ruff",
     "pre-commit"
+]
+cellmap = [
+    "zarr>=2.16",
 ]
 
 [build-system]

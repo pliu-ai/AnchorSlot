@@ -15,6 +15,7 @@ The two terms are composed into a normalized 32-label distribution.
   trainer, and single-pass predictor;
 - exact Dataset200 and historical Dataset202 metadata/splits;
 - leakage-guarded training, prediction, and evaluation commands;
+- a manifest-pinned CellMap leaderboard Zarr-2 exporter and validator;
 - the filtered metric implementation used by the experiment notes;
 - lightweight unit tests that do not require CellMap data or a GPU.
 
@@ -116,12 +117,35 @@ present-label-filtered `summary_filtered.json`. For a TMI paper, report the
 metric definition explicitly and add subject-level confidence intervals; do not
 use the filtered mean as the only outcome.
 
+### Official CellMap leaderboard format
+
+The leaderboard does not consume the historical `summary_filtered.json` or a
+single multiclass NIfTI. Use the independent manifest-aware exporter to derive
+the 48 overlapping atomic/parent arrays and validate their Zarr-2 geometry:
+
+```bash
+pip install -e '.[cellmap]'
+
+anchorslot_export_cellmap_submission \
+  --predictions /path/to/official_test_predictions \
+  --manifest /path/to/pinned/test_crop_manifest.csv \
+  --output /path/to/submission.zarr
+
+anchorslot_validate_cellmap_submission \
+  --submission /path/to/submission.zarr \
+  --manifest /path/to/pinned/test_crop_manifest.csv
+```
+
+See [the leaderboard submission guide](documentation/cellmap_leaderboard_submission.md)
+for pinned-manifest, validation-prediction, and packaging commands.
+
 ## Tests
 
 The smoke suite is CPU-only:
 
 ```bash
 pytest -q nnunetv2/tests/test_hierarchical_parallel_anchorslot.py
+pytest -q nnunetv2/tests/test_cellmap_challenge_submission.py
 python scripts/verify_protocol.py --config-root configs/cellmap
 ```
 
