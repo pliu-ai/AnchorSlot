@@ -115,6 +115,8 @@ ENV/
 *.jpeg
 
 *.model
+*.out
+*.err
 
 # Ignore DATASET folder contents but keep folder structure
 DATASET/nnUNet_preprocessed/*
