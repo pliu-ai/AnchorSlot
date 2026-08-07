@@ -84,3 +84,27 @@ def build_hierarchical_targets(
 def semantic_channel_layout() -> Tuple[Tuple[int, int], ...]:
     """Map every original label to ``(coarse_channel, slot_id)``."""
     return tuple(zip(ORIGINAL_TO_COARSE, ORIGINAL_TO_SLOT))
+
+
+def hierarchy_active_masks(
+    active_semantic: torch.Tensor,
+) -> Tuple[torch.Tensor, torch.Tensor]:
+    """Derive coarse-channel and group-slot annotation masks from 32 leaves."""
+    if active_semantic.ndim != 2 or active_semantic.shape[1] != NUM_ORIGINAL_CLASSES:
+        raise ValueError("active_semantic must have shape [B, 32]")
+    active_semantic = active_semantic.bool()
+    coarse = torch.zeros(
+        active_semantic.shape[0], NUM_COARSE_CHANNELS,
+        dtype=torch.bool, device=active_semantic.device,
+    )
+    slots = torch.zeros(
+        active_semantic.shape[0], NUM_PARALLEL_GROUPS, NUM_ANCHOR_SLOTS,
+        dtype=torch.bool, device=active_semantic.device,
+    )
+    for original_label in range(NUM_ORIGINAL_CLASSES):
+        coarse[:, ORIGINAL_TO_COARSE[original_label]] |= active_semantic[:, original_label]
+        group, slot = ORIGINAL_TO_GROUP[original_label], ORIGINAL_TO_SLOT[original_label]
+        if group >= 0:
+            slots[:, group, slot] |= active_semantic[:, original_label]
+    coarse[:, BACKGROUND_COARSE_CHANNEL] = True
+    return coarse, slots

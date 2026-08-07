@@ -41,11 +41,19 @@ class ParallelAnchorSlotHead(nn.Module):
             raise ValueError(
                 f"feature width mismatch: got {features.shape[1]}, expected {self.in_channels}"
             )
+        if pair_codes.ndim not in (3, 4):
+            raise ValueError("pair_codes must have shape [G, S, C] or [B, G, S, C]")
+        if pair_codes.ndim == 4 and pair_codes.shape[0] != features.shape[0]:
+            raise ValueError("batch-conditioned pair codes must match the feature batch")
         weights = F.normalize(self.weight_projection(pair_codes), dim=-1)
         features = F.normalize(features, dim=1)
         biases = self.bias_projection(pair_codes).squeeze(-1)
-        logits = torch.einsum("bc...,gsc->bgs...", features, weights)
-        bias_shape = (1, *biases.shape, *([1] * (features.ndim - 2)))
+        if pair_codes.ndim == 3:
+            logits = torch.einsum("bc...,gsc->bgs...", features, weights)
+            bias_shape = (1, *biases.shape, *([1] * (features.ndim - 2)))
+        else:
+            logits = torch.einsum("bc...,bgsc->bgs...", features, weights)
+            bias_shape = (*biases.shape, *([1] * (features.ndim - 2)))
         return logits + biases.view(bias_shape)
 
 

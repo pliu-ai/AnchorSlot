@@ -11,8 +11,23 @@ from nnunetv2.training.nnUNetTrainer.variants.structured_conditional.hierarchica
 from nnunetv2.training.nnUNetTrainer.variants.structured_conditional.network_hierarchical_parallel_anchorslot import (
     HierarchicalParallelAnchorSlotUNet,
 )
+from nnunetv2.training.nnUNetTrainer.variants.structured_conditional.network_resolution_adaptive_hierarchical_anchorslot import (
+    ResolutionAdaptiveHierarchicalAnchorSlotUNet,
+)
+from nnunetv2.training.nnUNetTrainer.variants.structured_conditional.resolution_adaptive_mapping import (
+    NUM_PARENT_CLASSES,
+    PARENT_NAMES,
+    build_instance_separation_targets,
+    build_parent_targets,
+)
 from nnunetv2.training.nnUNetTrainer.variants.structured_conditional.structured_loss_hierarchical_parallel_anchorslot import (
     HierarchicalParallelAnchorSlotLoss,
+)
+from nnunetv2.training.nnUNetTrainer.variants.structured_conditional.structured_loss_resolution_adaptive_hierarchical_anchorslot import (
+    ResolutionAdaptiveHierarchicalAnchorSlotLoss,
+)
+from nnunetv2.training.nnUNetTrainer.variants.structured_conditional.trainer_resolution_adaptive_hierarchical_anchorslot import (
+    _MixedResolutionIterator,
 )
 
 
@@ -120,3 +135,107 @@ def test_joint_hierarchical_loss_backpropagates_to_group_and_anchor_codes() -> N
     assert network.anchor_slot_embeddings.grad is not None
     assert torch.isfinite(network.group_embeddings.grad).all()
     assert torch.isfinite(network.anchor_slot_embeddings.grad).all()
+
+
+def test_resolution_adaptive_network_emits_official_parent_and_edge_heads() -> None:
+    network = ResolutionAdaptiveHierarchicalAnchorSlotUNet(
+        _TinyBackbone(), code_dim=16, reference_voxel_size=(4.0, 4.0)
+    )
+    output = network(
+        torch.randn(2, 1, 16, 16),
+        voxel_size=torch.tensor([[4.0, 4.0], [32.0, 32.0]]),
+        return_hierarchy=True,
+    )
+    assert output["semantic_logits"].shape == (2, 32, 16, 16)
+    assert output["parent_logits"].shape == (2, NUM_PARENT_CLASSES, 16, 16)
+    assert output["separation_logits"].shape == (2, 3, 16, 16)
+    assert output["resolution_embedding"].shape == (2, 16)
+    assert not torch.allclose(
+        output["resolution_embedding"][0], output["resolution_embedding"][1]
+    )
+
+
+def test_resolution_adaptive_loss_trains_scale_parent_and_edge_parameters() -> None:
+    network = ResolutionAdaptiveHierarchicalAnchorSlotUNet(
+        _TinyBackbone(), code_dim=12, reference_voxel_size=(4.0, 4.0)
+    )
+    target = torch.randint(0, 32, (2, 1, 8, 8))
+    active = torch.ones(2, 32, dtype=torch.bool)
+    output = network(
+        torch.randn(2, 1, 8, 8),
+        voxel_size=torch.tensor([[4.0, 4.0], [16.0, 16.0]]),
+        return_hierarchy=True,
+    )
+    loss = ResolutionAdaptiveHierarchicalAnchorSlotLoss()(
+        output["semantic_logits"],
+        output["coarse_logits"],
+        output["slot_logits"],
+        output["parent_logits"],
+        output["separation_logits"],
+        target,
+        active_semantic_mask=active,
+    )
+    loss.backward()
+    assert torch.isfinite(loss)
+    assert network.parent_heads[-1].weight.grad is not None
+    assert network.separation_heads[-1].weight.grad is not None
+    assert network.resolution_film[-1].weight.grad is not None
+
+
+def test_parent_and_separation_targets_follow_cellmap_hierarchy() -> None:
+    target = torch.tensor([[[[0, 4, 5], [9, 10, 1], [25, 26, 27]]]])
+    valid = torch.ones_like(target, dtype=torch.bool)
+    parents = build_parent_targets(target, valid)
+    assert parents.shape[1] == NUM_PARENT_CLASSES
+    # mito contains atomic labels 4 and 5; ves contains 9 and 10.
+    assert parents[0, 0, 0, :].tolist() == [0.0, 1.0, 1.0]
+    assert parents[0, 2, 1, :].tolist() == [1.0, 1.0, 0.0]
+    separation, mask = build_instance_separation_targets(target, valid)
+    assert separation.shape == mask.shape == (1, 3, 3, 3)
+    assert mask.any()
+
+
+def test_mixed_resolution_iterator_tags_each_physical_stream() -> None:
+    primary = iter([{"data": torch.zeros(1, 1, 2, 2), "target": torch.zeros(1, 1, 2, 2)}])
+    auxiliary = iter([{"data": torch.ones(1, 1, 2, 2), "target": torch.zeros(1, 1, 2, 2)}])
+    mixed = _MixedResolutionIterator(
+        primary,
+        auxiliary,
+        primary_spacing=(4.0, 4.0),
+        auxiliary_spacing=(32.0, 32.0),
+        auxiliary_probability=0.5,
+        random_sampling=False,
+        seed=123,
+    )
+    high = next(mixed)
+    low = next(mixed)
+    assert high["resolution_source"] == "primary"
+    assert low["resolution_source"] == "auxiliary"
+    torch.testing.assert_close(high["voxel_size"], torch.tensor([[4.0, 4.0]]))
+    torch.testing.assert_close(low["voxel_size"], torch.tensor([[32.0, 32.0]]))
+
+
+def test_parent_only_low_resolution_label_bypasses_atomic_supervision() -> None:
+    network = ResolutionAdaptiveHierarchicalAnchorSlotUNet(
+        _TinyBackbone(), code_dim=8, reference_voxel_size=(4.0, 4.0)
+    )
+    # Dataset201 encodes a perox parent-only annotation with a representative
+    # descendant ID (31). It must supervise perox, not perox_lum.
+    target = torch.full((1, 1, 8, 8), 31, dtype=torch.long)
+    atomic_active = torch.zeros(1, 32, dtype=torch.bool)
+    atomic_active[:, 0] = True
+    parent_active = torch.zeros(1, NUM_PARENT_CLASSES, dtype=torch.bool)
+    parent_active[:, PARENT_NAMES.index("perox")] = True
+    output = network(
+        torch.randn(1, 1, 8, 8), voxel_size=(32.0, 32.0), return_hierarchy=True
+    )
+    loss, components = ResolutionAdaptiveHierarchicalAnchorSlotLoss()(
+        output["semantic_logits"], output["coarse_logits"], output["slot_logits"],
+        output["parent_logits"], output["separation_logits"], target,
+        active_semantic_mask=atomic_active,
+        active_parent_annotation_mask=parent_active,
+        return_components=True,
+    )
+    loss.backward()
+    assert components["parent_bce"] > 0
+    assert network.parent_heads[-1].weight.grad is not None

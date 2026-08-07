@@ -457,6 +457,7 @@ class StructuredConditionalPredictor(nnUNetPredictor):
         run_all_groups: bool,
         output_mode: str,
         fixed_merge_mode: str,
+        voxel_size_nm: Optional[Tuple[float, ...]] = None,
         *args,
         **kwargs,
     ) -> None:
@@ -465,6 +466,7 @@ class StructuredConditionalPredictor(nnUNetPredictor):
         self.run_all_groups = bool(run_all_groups)
         self.output_mode = str(output_mode)
         self.fixed_merge_mode = str(fixed_merge_mode).lower().strip()
+        self.voxel_size_nm = voxel_size_nm
         if self.fixed_merge_mode not in ("max", "mean"):
             raise ValueError(
                 f"fixed_merge_mode must be 'max' or 'mean', got {self.fixed_merge_mode!r}"
@@ -548,7 +550,23 @@ class StructuredConditionalPredictor(nnUNetPredictor):
         mirror_axes = self.allowed_mirroring_axes if self.use_mirroring else None
         group_ids = self._make_group_ids(x.shape[0], x.device)
 
-        prediction = self.network(x) if self.is_hierarchical_parallel else self.network(x, group_ids)
+        hpa_kwargs = {}
+        if self.is_hierarchical_parallel and self.voxel_size_nm is not None:
+            spacing = self.voxel_size_nm
+            if len(spacing) == 1:
+                spacing = spacing * (x.ndim - 2)
+            if len(spacing) != x.ndim - 2:
+                raise ValueError(
+                    f"--voxel_size_nm needs 1 or {x.ndim - 2} values, got {spacing}"
+                )
+            hpa_kwargs["voxel_size"] = torch.tensor(
+                spacing, dtype=torch.float32, device=x.device
+            )[None].expand(x.shape[0], -1)
+        prediction = (
+            self.network(x, **hpa_kwargs)
+            if self.is_hierarchical_parallel
+            else self.network(x, group_ids)
+        )
         if isinstance(prediction, (list, tuple)):
             prediction = prediction[0]
         prediction = prediction.float()
@@ -562,7 +580,11 @@ class StructuredConditionalPredictor(nnUNetPredictor):
             ]
             for axes in axes_combinations:
                 flipped = torch.flip(x, axes)
-                pred_mirror = self.network(flipped) if self.is_hierarchical_parallel else self.network(flipped, group_ids)
+                pred_mirror = (
+                    self.network(flipped, **hpa_kwargs)
+                    if self.is_hierarchical_parallel
+                    else self.network(flipped, group_ids)
+                )
                 if isinstance(pred_mirror, (list, tuple)):
                     pred_mirror = pred_mirror[0]
                 prediction += torch.flip(pred_mirror.float(), axes)
@@ -1005,6 +1027,15 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
+        "--voxel_size_nm",
+        type=str,
+        default=None,
+        help=(
+            "Physical voxel size for resolution-adaptive HPA, as one value or "
+            "comma-separated x,y,z values (for example 32 or 8,8,32)."
+        ),
+    )
+    parser.add_argument(
         "--group_id",
         type=str,
         required=False,
@@ -1082,12 +1113,20 @@ def main() -> None:
     device = _resolve_device(args.device)
     group_id, run_all_groups = _parse_group_mode(args.group_id)
     border_pad_size = _parse_border_mirror_pad_size_arg(args.inference_border_mirror_pad_size)
+    voxel_size_nm = (
+        tuple(float(value.strip()) for value in args.voxel_size_nm.split(","))
+        if args.voxel_size_nm is not None
+        else None
+    )
+    if voxel_size_nm is not None and (not voxel_size_nm or any(value <= 0 for value in voxel_size_nm)):
+        raise ValueError("--voxel_size_nm values must be positive")
 
     predictor = StructuredConditionalPredictor(
         group_id=int(group_id),
         run_all_groups=bool(run_all_groups),
         output_mode=str(args.output_mode),
         fixed_merge_mode=str(args.fixed_merge_mode),
+        voxel_size_nm=voxel_size_nm,
         tile_step_size=float(args.step_size),
         use_gaussian=True,
         use_mirroring=not args.disable_tta,
@@ -1124,6 +1163,7 @@ def main() -> None:
             "fixed_merge_mode": str(args.fixed_merge_mode),
             "inference_padding_mode": str(args.inference_padding_mode),
             "inference_border_mirror_pad_size": str(args.inference_border_mirror_pad_size),
+            "voxel_size_nm": list(voxel_size_nm) if voxel_size_nm is not None else None,
             "trainer_name": str(predictor.trainer_name),
             "num_dynamic_groups": int(predictor.num_dynamic_groups),
         },
@@ -1141,6 +1181,7 @@ def main() -> None:
         f" fixed_merge_mode={args.fixed_merge_mode}"
         f" inference_padding_mode={args.inference_padding_mode}"
         f" inference_border_mirror_pad_size={args.inference_border_mirror_pad_size}"
+        f" voxel_size_nm={voxel_size_nm}"
         f" checkpoint={args.chk}"
     )
 

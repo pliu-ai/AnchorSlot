@@ -9,6 +9,10 @@ from .trainer_structured_conditional_no_slot3_multi_condition import (
     nnUNetTrainerStructuredConditionalNoSlot3MultiCondition,
 )
 from .trainer_hierarchical_parallel_anchorslot import nnUNetTrainerHierarchicalParallelAnchorSlot
+from .trainer_resolution_adaptive_hierarchical_anchorslot import (
+    nnUNetTrainerResolutionAdaptiveHierarchicalParallelAnchorSlot,
+    nnUNetTrainerResolutionAdaptiveHierarchicalAnchorSlot,
+)
 from .trainer_structured_conditional_no_slot3_er_in_cond_slot import (
     nnUNetTrainerStructuredConditionalNoSlot3ERInCondSlot,
 )
@@ -65,6 +69,8 @@ __all__ = [
     "nnUNetTrainerStructuredConditionalNoSlot3BalancedPresent",
     "nnUNetTrainerStructuredConditionalNoSlot3MultiCondition",
     "nnUNetTrainerHierarchicalParallelAnchorSlot",
+    "nnUNetTrainerResolutionAdaptiveHierarchicalAnchorSlot",
+    "nnUNetTrainerResolutionAdaptiveHierarchicalParallelAnchorSlot",
     "nnUNetTrainerStructuredConditionalNoSlot3ERInCondSlot",
     "nnUNetTrainerStructuredConditionalNoSlot3ERDynamic",
     "nnUNetTrainerStructuredConditionalERDynamic",

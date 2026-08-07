@@ -28,6 +28,19 @@ The main implementation is under
 - `trainer_hierarchical_parallel_anchorslot.py`
 - `inference_hierarchical_parallel_anchorslot.py`
 
+The multi-resolution upgrade is implemented separately so baseline checkpoints
+remain compatible:
+
+- `network_resolution_adaptive_hierarchical_anchorslot.py`
+- `resolution_adaptive_mapping.py`
+- `structured_loss_resolution_adaptive_hierarchical_anchorslot.py`
+- `trainer_resolution_adaptive_hierarchical_anchorslot.py`
+
+It trains one shared model on real 4 nm and 32 nm batches, conditions decoder
+features and slot codes on physical voxel size, directly supervises all 17
+official parent nodes, and adds boundary/affinity auxiliaries. See
+`documentation/resolution_adaptive_hierarchical_anchorslot.md`.
+
 ## Important evaluation-protocol warning
 
 The archived `0.5167` foreground Dice result is **not a valid held-out paper
@@ -87,6 +100,13 @@ For Slurm, edit resource requests if needed and submit:
 sbatch scripts/slurm/train_anchorslot.sbatch
 ```
 
+For joint 4/32-nm training with Dataset200 as the primary stream and Dataset201
+as the auxiliary stream:
+
+```bash
+sbatch scripts/slurm/train_resolution_adaptive_hierarchical_anchorslot.sbatch
+```
+
 ## Prediction
 
 ```bash
@@ -135,6 +155,10 @@ anchorslot_validate_cellmap_submission \
   --submission /path/to/submission.zarr \
   --manifest /path/to/pinned/test_crop_manifest.csv
 ```
+
+When evaluating local validation data, native instance-labelled truth must be
+exported with `--truth-labels-root` and validated with `--role ground_truth`.
+Do not export a merged truth NIfTI through the prediction adapter.
 
 See [the leaderboard submission guide](documentation/cellmap_leaderboard_submission.md)
 for pinned-manifest, validation-prediction, and packaging commands.

@@ -11,6 +11,7 @@ from .hierarchical_parallel_mapping import (
     NUM_COARSE_CHANNELS,
     NUM_ORIGINAL_CLASSES,
     build_hierarchical_targets,
+    hierarchy_active_masks,
 )
 
 
@@ -31,9 +32,20 @@ class HierarchicalParallelAnchorSlotLoss(nn.Module):
         self.config = config if config is not None else HierarchicalParallelLossConfig()
 
     @staticmethod
-    def _masked_ce(logits: torch.Tensor, target: torch.Tensor, valid_mask: torch.Tensor) -> torch.Tensor:
+    def _masked_ce(
+        logits: torch.Tensor,
+        target: torch.Tensor,
+        valid_mask: torch.Tensor,
+        active_channels: Optional[torch.Tensor] = None,
+    ) -> torch.Tensor:
         target_labels = target[:, 0].long()
         valid = valid_mask[:, 0]
+        if active_channels is not None:
+            active_channels = active_channels.bool()
+            active_for_target = active_channels.gather(1, target_labels.flatten(1)).view_as(target_labels)
+            valid = valid & active_for_target
+            channel_shape = (active_channels.shape[0], active_channels.shape[1], *([1] * (logits.ndim - 2)))
+            logits = logits.masked_fill(~active_channels.view(channel_shape), -1e4)
         if not torch.any(valid):
             return logits.sum() * 0.0
         ce = F.cross_entropy(logits, target_labels, reduction="none")
@@ -44,7 +56,16 @@ class HierarchicalParallelAnchorSlotLoss(nn.Module):
         semantic_logits: torch.Tensor,
         semantic_target: torch.Tensor,
         valid_mask: torch.Tensor,
+        active_semantic: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
+        if active_semantic is not None:
+            channel_shape = (
+                active_semantic.shape[0], active_semantic.shape[1],
+                *([1] * (semantic_logits.ndim - 2)),
+            )
+            semantic_logits = semantic_logits.masked_fill(
+                ~active_semantic.bool().view(channel_shape), -1e4
+            )
         probs = torch.softmax(semantic_logits, dim=1)
         labels = semantic_target[:, 0].long()
         onehot = F.one_hot(labels, num_classes=NUM_ORIGINAL_CLASSES)
@@ -71,6 +92,7 @@ class HierarchicalParallelAnchorSlotLoss(nn.Module):
         group_target: torch.Tensor,
         slot_target: torch.Tensor,
         valid_mask: torch.Tensor,
+        active_slots: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
         dynamic = valid_mask[:, 0] & (group_target[:, 0] >= 0)
         if not torch.any(dynamic):
@@ -83,6 +105,14 @@ class HierarchicalParallelAnchorSlotLoss(nn.Module):
         selected_groups = group_target[:, 0][dynamic].long()
         row_ids = torch.arange(selected_groups.numel(), device=slot_logits.device)
         selected_logits = selected_logits[row_ids, selected_groups]
+        if active_slots is not None:
+            spatial_shape = group_target.shape[2:]
+            expanded = active_slots.view(
+                active_slots.shape[0], *([1] * len(spatial_shape)),
+                active_slots.shape[1], active_slots.shape[2],
+            ).expand(active_slots.shape[0], *spatial_shape, *active_slots.shape[1:])
+            selected_active = expanded[dynamic][row_ids, selected_groups]
+            selected_logits = selected_logits.masked_fill(~selected_active, -1e4)
         selected_slots = slot_target[:, 0][dynamic].long()
         return F.cross_entropy(selected_logits, selected_slots)
 
@@ -94,6 +124,8 @@ class HierarchicalParallelAnchorSlotLoss(nn.Module):
         segmentation: torch.Tensor,
         ignore_label: Optional[int] = None,
         return_components: bool = False,
+        active_semantic_mask: Optional[torch.Tensor] = None,
+        ignore_unannotated_background: bool = False,
     ):
         if semantic_logits.shape[1] != NUM_ORIGINAL_CLASSES:
             raise ValueError("semantic logits have an invalid channel count")
@@ -104,10 +136,27 @@ class HierarchicalParallelAnchorSlotLoss(nn.Module):
             segmentation,
             ignore_label=ignore_label,
         )
-        semantic_ce = self._masked_ce(semantic_logits, semantic, valid)
-        semantic_dice = self._semantic_dice(semantic_logits, semantic, valid)
-        coarse_ce = self._masked_ce(coarse_logits, coarse, valid)
-        slot_ce = self._slot_ce(slot_logits, group, slot, valid)
+        active_coarse = active_slots = None
+        if active_semantic_mask is not None:
+            active_semantic_mask = active_semantic_mask.to(semantic_logits.device).bool().clone()
+            active_semantic_mask[:, 0] = True
+            active_coarse, active_slots = hierarchy_active_masks(active_semantic_mask)
+            target_active = active_semantic_mask.gather(
+                1, semantic[:, 0].flatten(1)
+            ).view_as(semantic[:, 0])
+            valid = valid & target_active[:, None]
+            if ignore_unannotated_background:
+                partial = active_semantic_mask[:, 1:].sum(dim=1) < (NUM_ORIGINAL_CLASSES - 1)
+                background = semantic[:, 0] == 0
+                valid = valid & ~(partial.view(-1, *([1] * (background.ndim - 1))) & background)[:, None]
+        semantic_ce = self._masked_ce(
+            semantic_logits, semantic, valid, active_semantic_mask
+        )
+        semantic_dice = self._semantic_dice(
+            semantic_logits, semantic, valid, active_semantic_mask
+        )
+        coarse_ce = self._masked_ce(coarse_logits, coarse, valid, active_coarse)
+        slot_ce = self._slot_ce(slot_logits, group, slot, valid, active_slots)
 
         total = (
             self.config.lambda_semantic_ce * semantic_ce
