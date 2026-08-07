@@ -14,11 +14,13 @@ from nnunetv2.evaluation.cellmap_challenge import (  # noqa: E402
     ATOMIC_CLASSES,
     INSTANCE_CLASSES,
     PARENT_CLASSES,
+    export_ground_truth,
     export_submission,
     hard_mask_for_class,
     read_manifest,
     validate_submission,
     validate_prediction_inputs,
+    validate_ground_truth_inputs,
     write_annotated_validation_manifest,
     write_validation_manifest,
 )
@@ -126,6 +128,57 @@ def test_export_and_validate_submission(tmp_path: Path):
     inputs = validate_prediction_inputs(predictions, manifest)
     assert inputs["status"] == "valid"
     assert inputs["crops"][0]["present_label_ids"] == [4, 5, 6]
+
+
+def test_ground_truth_export_preserves_instance_ids(tmp_path: Path):
+    manifest = tmp_path / "manifest.csv"
+    _write_manifest(manifest)
+    labels = tmp_path / "labels" / "synthetic" / "crop42" / "labels"
+    labels.mkdir(parents=True)
+    shape = (5, 6, 7)
+    affine = np.diag([2.0, 3.0, 4.0, 1.0])
+    affine[:3, 3] = [10.0, 20.0, 30.0]
+
+    semantic = {
+        "mito_mem": np.zeros(shape, dtype=np.uint8),
+        "mito_lum": np.zeros(shape, dtype=np.uint8),
+        "mito_ribo": np.zeros(shape, dtype=np.uint8),
+    }
+    semantic["mito_mem"][0:2] = 1
+    semantic["mito_lum"][2:4] = 1
+    semantic["mito_ribo"][4] = 1
+    mito_instances = np.zeros(shape, dtype=np.uint16)
+    mito_instances[0:2, :, 0:2] = 17
+    mito_instances[3:5, :, 5:7] = 42
+    cell_instances = np.ones(shape, dtype=np.uint16)
+    arrays = {**semantic, "mito": mito_instances, "cell": cell_instances}
+    for class_label, values in arrays.items():
+        nib.save(
+            nib.Nifti1Image(values, affine),
+            labels / f"synthetic_crop42_{class_label}_2.0nm.nii.gz",
+        )
+
+    input_report = validate_ground_truth_inputs(tmp_path / "labels", manifest)
+    assert input_report["status"] == "valid", input_report["errors"]
+
+    output = tmp_path / "truth.zarr"
+    export_ground_truth(tmp_path / "labels", manifest, output, chunks=(2, 3, 4))
+    root = zarr.open_group(str(output), mode="a")
+    assert set(np.unique(root["crop42"]["mito"][:])) == {0, 17, 42}
+    assert root["crop42"]["mito"].attrs["value_semantics"] == "instance_id"
+    assert set(np.unique(root["crop42"]["mito_mem"][:])) <= {0, 1}
+
+    truth_report = validate_submission(output, manifest, role="ground_truth")
+    assert truth_report["status"] == "valid", truth_report["errors"]
+    prediction_report = validate_submission(output, manifest, role="prediction")
+    assert prediction_report["status"] == "invalid"
+
+    root["crop42"]["mito"][:] = (root["crop42"]["mito"][:] > 0).astype(np.uint16)
+    collapsed_report = validate_submission(output, manifest, role="ground_truth")
+    assert collapsed_report["status"] == "invalid"
+    assert any(
+        "native instance IDs were lost" in error for error in collapsed_report["errors"]
+    )
 
 
 def test_validation_manifest_uses_only_root_predictions(tmp_path: Path):

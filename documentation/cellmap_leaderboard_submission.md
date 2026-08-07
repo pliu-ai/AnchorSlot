@@ -123,8 +123,29 @@ The reproducible long-running workflow in
 `scripts/slurm/evaluate_cellmap_validation_latest.sbatch` exports prediction
 and truth stores, validates both, and evaluates them with a pinned official
 challenge checkout. Set `ANCHORSLOT_ROOT`, `PREDICTIONS`,
-`GROUND_TRUTH_MERGED`, `MANIFEST`, `OUTPUT_DIR`, `CSC_REPO`, and `PYTHON` when
+`GROUND_TRUTH_LABELS_ROOT`, `MANIFEST`, `OUTPUT_DIR`, `CSC_REPO`, and `PYTHON` when
 submitting it.
+
+Ground truth must use the native per-class tree, not a merged 0..31 NIfTI:
+
+```bash
+anchorslot_export_cellmap_submission \
+  --truth-labels-root /path/to/labelsTr_split \
+  --manifest /path/to/validation_manifest_annotated.csv \
+  --output /path/to/ground_truth.zarr
+
+anchorslot_validate_cellmap_submission \
+  --submission /path/to/ground_truth.zarr \
+  --manifest /path/to/validation_manifest_annotated.csv \
+  --role ground_truth
+```
+
+This distinction is essential. Prediction arrays are binary and the official
+instance scorer connected-components them. Instance-scored truth arrays must
+retain their native integer object IDs. Exporting truth through
+`--predictions` collapses multiple objects to ID 1 and invalidates the instance
+metric. Ground-truth validation now rejects a binary array when it contains
+multiple connected objects.
 
 For a quick integration test on one crop, add `--crop 174` when building the
 validation manifest. The export will then contain only `crop174` and its 48

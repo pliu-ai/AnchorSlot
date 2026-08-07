@@ -426,6 +426,127 @@ def write_annotated_validation_manifest(
     return output_csv
 
 
+def _ground_truth_annotation_path(
+    labels_root: Path,
+    entry: ManifestEntry,
+) -> Path:
+    """Resolve one native CellMap annotation without confusing parent/child names."""
+    label_dir = labels_root / entry.dataset / entry.crop_name / "labels"
+    if not label_dir.is_dir():
+        raise FileNotFoundError(
+            f"Missing annotation directory for {entry.dataset}/{entry.crop_name}: {label_dir}"
+        )
+    prefix = f"{entry.dataset}_{entry.crop_name}_{entry.class_label}_"
+    candidates = []
+    for path in sorted(label_dir.glob(f"{prefix}*nm.nii.gz")):
+        resolution_token = path.name[len(prefix) : -len("nm.nii.gz")]
+        # This rejects, for example, ``mito_mem`` when resolving ``mito``.
+        if resolution_token and resolution_token[0].isdigit():
+            candidates.append(path)
+    if not candidates:
+        raise FileNotFoundError(
+            f"No native annotation for {entry.crop_name}/{entry.class_label} under {label_dir}"
+        )
+    if len(candidates) == 1:
+        return candidates[0]
+
+    geometry_matches = []
+    for path in candidates:
+        image = nib.load(str(path))
+        if tuple(image.shape) != entry.shape:
+            continue
+        zooms = tuple(float(value) for value in image.header.get_zooms()[:3])
+        if _vectors_close(zooms, entry.voxel_size, tolerance=1e-4):
+            geometry_matches.append(path)
+    if len(geometry_matches) == 1:
+        return geometry_matches[0]
+    raise ValueError(
+        f"Ambiguous native annotations for {entry.crop_name}/{entry.class_label}: "
+        f"{[str(path) for path in candidates]}"
+    )
+
+
+def _load_ground_truth_annotation(
+    path: Path,
+    expected_shape: Tuple[int, int, int],
+    *,
+    preserve_instance_ids: bool,
+) -> np.ndarray:
+    image = nib.load(str(path))
+    if tuple(image.shape) != tuple(expected_shape):
+        raise ValueError(
+            f"Shape mismatch for {path}: annotation={image.shape}, manifest={expected_shape}"
+        )
+    values = np.asanyarray(image.dataobj)
+    if not np.all(np.isfinite(values)):
+        raise ValueError(f"Ground-truth annotation {path} contains non-finite values")
+    if not np.issubdtype(values.dtype, np.integer):
+        rounded = np.rint(values)
+        if not np.array_equal(values, rounded):
+            raise ValueError(f"Ground-truth annotation {path} is not integer-valued")
+        values = rounded
+    minimum = int(np.min(values))
+    if minimum < 0:
+        raise ValueError(f"Ground-truth annotation {path} contains negative IDs")
+    if not preserve_instance_ids:
+        return np.asarray(values > 0, dtype=np.uint8)
+
+    maximum = int(np.max(values))
+    if maximum <= np.iinfo(np.uint8).max:
+        dtype = np.uint8
+    elif maximum <= np.iinfo(np.uint16).max:
+        dtype = np.uint16
+    elif maximum <= np.iinfo(np.uint32).max:
+        dtype = np.uint32
+    else:
+        dtype = np.uint64
+    return np.asarray(values, dtype=dtype)
+
+
+def validate_ground_truth_inputs(
+    labels_root: str | Path,
+    manifest_path: str | Path,
+) -> Dict[str, object]:
+    """Validate native per-class annotations before building evaluator truth."""
+    labels_root = Path(labels_root)
+    manifest_path = Path(manifest_path)
+    entries = read_manifest(manifest_path)
+    errors: List[str] = []
+    reports = []
+    for entry in entries:
+        try:
+            path = _ground_truth_annotation_path(labels_root, entry)
+            values = _load_ground_truth_annotation(
+                path,
+                entry.shape,
+                preserve_instance_ids=entry.class_label in INSTANCE_CLASSES,
+            )
+            unique = np.unique(values)
+            reports.append(
+                {
+                    "crop_name": entry.crop_name,
+                    "class_label": entry.class_label,
+                    "annotation": str(path),
+                    "max_value": int(unique[-1]),
+                    "num_nonzero_ids": int(np.count_nonzero(unique)),
+                }
+            )
+        except Exception as exc:
+            errors.append(
+                f"{entry.crop_name}/{entry.class_label}: {type(exc).__name__}: {exc}"
+            )
+    return {
+        "status": "valid" if not errors else "invalid",
+        "labels_root": str(labels_root),
+        "manifest_path": str(manifest_path),
+        "manifest_sha256": manifest_sha256(manifest_path),
+        "num_expected_arrays": len(entries),
+        "num_checked_arrays": len(reports),
+        "errors": errors,
+        "arrays": reports,
+    }
+
+
 def _load_hard_segmentation(
     path: Path, expected_shape: Tuple[int, int, int]
 ) -> np.ndarray:
@@ -608,6 +729,7 @@ def export_submission(
     root.attrs.update(
         {
             "anchorslot_format_version": FORMAT_VERSION,
+            "store_role": "prediction",
             "hierarchy_mode": "derived_hard_union",
             "manifest_sha256": manifest_sha256(manifest_path),
             "manifest_name": manifest_path.name,
@@ -675,6 +797,107 @@ def export_submission(
     }
 
 
+def export_ground_truth(
+    labels_root: str | Path,
+    manifest_path: str | Path,
+    output_path: str | Path,
+    *,
+    overwrite: bool = False,
+    chunks: Sequence[int] = (64, 64, 64),
+) -> Dict[str, object]:
+    """Export native annotations while preserving official instance IDs.
+
+    Semantic arrays are written as binary masks. The ten instance-scored parent
+    classes retain the integer IDs stored in the source NIfTI annotations.
+    """
+    zarr = _import_zarr()
+    labels_root = Path(labels_root)
+    manifest_path = Path(manifest_path)
+    output_path = Path(output_path)
+    if output_path.suffix != ".zarr":
+        output_path = output_path.with_suffix(".zarr")
+    if output_path.exists():
+        if not overwrite:
+            raise FileExistsError(
+                f"Output already exists: {output_path}. Pass --overwrite to replace it."
+            )
+        shutil.rmtree(output_path)
+
+    entries = read_manifest(manifest_path)
+    grouped = entries_by_crop(entries)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    root = _open_zarr2_group(zarr, output_path, mode="w")
+    root.attrs.update(
+        {
+            "anchorslot_format_version": FORMAT_VERSION,
+            "store_role": "ground_truth",
+            "hierarchy_mode": "independent_native_annotations",
+            "manifest_sha256": manifest_sha256(manifest_path),
+            "manifest_name": manifest_path.name,
+            "source_labels": str(labels_root.resolve()),
+            "instance_classes": list(INSTANCE_CLASSES),
+        }
+    )
+
+    arrays_written = 0
+    crop_reports = []
+    for crop_name in sorted(grouped, key=lambda value: int(value[4:])):
+        crop_entries = grouped[crop_name]
+        crop_group = root.create_group(crop_name)
+        crop_report = {"crop_name": crop_name, "arrays": []}
+        for entry in sorted(crop_entries, key=lambda item: item.class_label):
+            source = _ground_truth_annotation_path(labels_root, entry)
+            is_instance = entry.class_label in INSTANCE_CLASSES
+            values = _load_ground_truth_annotation(
+                source,
+                entry.shape,
+                preserve_instance_ids=is_instance,
+            )
+            this_chunks = _chunk_shape(entry.shape, chunks)
+            dataset = _create_zarr_array(
+                crop_group,
+                entry.class_label,
+                shape=entry.shape,
+                chunks=this_chunks,
+                dtype=values.dtype,
+            )
+            for slicer in _iter_axis0(entry.shape, this_chunks[0]):
+                dataset[slicer] = values[slicer]
+            unique = np.unique(values)
+            dataset.attrs.update(
+                {
+                    "voxel_size": list(entry.voxel_size),
+                    "translation": list(entry.translation),
+                    "shape": list(entry.shape),
+                    "source_annotation": str(source),
+                    "value_semantics": "instance_id" if is_instance else "binary_mask",
+                }
+            )
+            crop_report["arrays"].append(
+                {
+                    "class_label": entry.class_label,
+                    "source_annotation": str(source),
+                    "dtype": str(values.dtype),
+                    "max_value": int(unique[-1]),
+                    "num_nonzero_ids": int(np.count_nonzero(unique)),
+                }
+            )
+            arrays_written += 1
+            del values
+        crop_reports.append(crop_report)
+
+    return {
+        "status": "exported",
+        "role": "ground_truth",
+        "output_path": str(output_path),
+        "manifest_path": str(manifest_path),
+        "manifest_sha256": manifest_sha256(manifest_path),
+        "num_crops": len(grouped),
+        "num_arrays": arrays_written,
+        "crops": crop_reports,
+    }
+
+
 def _all_array_pairs(root) -> set[Tuple[str, str]]:
     pairs = set()
     for crop_name in root.group_keys():
@@ -698,10 +921,13 @@ def validate_submission(
     submission_path: str | Path,
     manifest_path: str | Path,
     *,
+    role: str = "prediction",
     check_values: bool = True,
     check_hierarchy: bool = True,
     chunks_axis0: int = 64,
 ) -> Dict[str, object]:
+    if role not in {"prediction", "ground_truth"}:
+        raise ValueError(f"role must be 'prediction' or 'ground_truth', got {role!r}")
     zarr = _import_zarr()
     submission_path = Path(submission_path)
     manifest_path = Path(manifest_path)
@@ -717,6 +943,9 @@ def validate_submission(
     if not (submission_path / ".zgroup").is_file():
         errors.append("Root .zgroup is missing; the store is not a Zarr-2 group.")
     root = _open_zarr2_group(zarr, submission_path, mode="r")
+    stored_role = root.attrs.get("store_role")
+    if stored_role is not None and stored_role != role:
+        errors.append(f"Store role mismatch: stored={stored_role!r}, requested={role!r}")
     actual_pairs = _all_array_pairs(root)
     missing_pairs = sorted(expected_pairs - actual_pairs)
     extra_pairs = sorted(actual_pairs - expected_pairs)
@@ -751,31 +980,61 @@ def validate_submission(
             )
 
         nonzero = 0
+        max_value = 0
+        unique_ids: set[int] = set()
+        is_instance_truth = role == "ground_truth" and entry.class_label in INSTANCE_CLASSES
         if check_values:
             for slicer in _iter_axis0(entry.shape, min(chunks_axis0, entry.shape[0])):
                 block = np.asarray(array[slicer])
                 if not np.all(np.isfinite(block)):
                     errors.append(f"{pair}: contains non-finite values")
                     break
-                if np.any((block != 0) & (block != 1)):
-                    values = np.unique(block[(block != 0) & (block != 1)])[:10].tolist()
-                    errors.append(
-                        f"{pair}: hard-label export is not binary; examples={values}"
-                    )
+                if not np.issubdtype(block.dtype, np.integer):
+                    if not np.array_equal(block, np.rint(block)):
+                        errors.append(f"{pair}: contains non-integer values")
+                        break
+                if np.any(block < 0):
+                    errors.append(f"{pair}: contains negative values")
+                    break
+                block_unique = np.unique(block)
+                max_value = max(max_value, int(block_unique[-1]))
+                if is_instance_truth:
+                    unique_ids.update(int(value) for value in block_unique if value > 0)
+                elif np.any((block_unique != 0) & (block_unique != 1)):
+                    values = block_unique[(block_unique != 0) & (block_unique != 1)][:10].tolist()
+                    errors.append(f"{pair}: expected a binary mask; examples={values}")
                     break
                 nonzero += int(np.count_nonzero(block))
+
+            # Binary truth is valid only when it really contains at most one
+            # connected instance. This catches the historical exporter bug that
+            # collapsed many objects to ID 1 before official evaluation.
+            if is_instance_truth and unique_ids == {1}:
+                from scipy import ndimage
+
+                foreground = np.asarray(array[:], dtype=bool)
+                structure = ndimage.generate_binary_structure(rank=3, connectivity=3)
+                _, components = ndimage.label(foreground, structure=structure)
+                if components > 1:
+                    errors.append(
+                        f"{pair}: binary instance truth contains {components} connected "
+                        "objects; native instance IDs were lost"
+                    )
+                unique_ids = set(range(1, int(components) + 1))
         array_reports.append(
             {
                 "crop_name": entry.crop_name,
                 "class_label": entry.class_label,
                 "shape": list(entry.shape),
                 "nonzero_voxels": nonzero if check_values else None,
+                "max_value": max_value if check_values else None,
+                "num_instances": len(unique_ids) if is_instance_truth and check_values else None,
             }
         )
 
     hierarchy_checks = 0
     hierarchy_skipped = 0
-    if check_hierarchy and root.attrs.get("hierarchy_mode") == "derived_hard_union":
+    if role == "prediction" and check_hierarchy and root.attrs.get("hierarchy_mode") == "derived_hard_union":
         for crop_name, crop_entries in grouped.items():
             available = {entry.class_label for entry in crop_entries} & {
                 class_label for crop, class_label in actual_pairs if crop == crop_name
@@ -807,7 +1066,7 @@ def validate_submission(
                         f"{crop_name}/{parent}: differs from child union at {mismatch} voxels"
                     )
                 hierarchy_checks += 1
-    elif check_hierarchy:
+    elif role == "prediction" and check_hierarchy:
         warnings.append(
             "Hierarchy check skipped because hierarchy_mode is not 'derived_hard_union'."
         )
@@ -822,6 +1081,7 @@ def validate_submission(
     report = {
         "status": "valid" if not errors else "invalid",
         "submission_path": str(submission_path),
+        "role": role,
         "manifest_path": str(manifest_path),
         "manifest_sha256": expected_hash,
         "num_expected_crops": len(grouped),
@@ -911,9 +1171,19 @@ def build_annotated_manifest_entry_point(argv: Sequence[str] | None = None) -> N
 
 def export_entry_point(argv: Sequence[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
-        description="Export AnchorSlot 0..31 NIfTI predictions as CellMap Zarr-2."
+        description=(
+            "Export AnchorSlot predictions or native CellMap ground truth as Zarr-2."
+        )
     )
-    parser.add_argument("--predictions", required=True)
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--predictions", help="Directory of merged 0..31 predictions.")
+    source.add_argument(
+        "--truth-labels-root",
+        help=(
+            "Native <dataset>/crop<ID>/labels tree. Integer IDs are preserved "
+            "for instance-scored classes."
+        ),
+    )
     parser.add_argument("--manifest", required=True)
     parser.add_argument("--output")
     parser.add_argument("--chunks", type=_parse_chunks, default=(64, 64, 64))
@@ -929,23 +1199,37 @@ def export_entry_point(argv: Sequence[str] | None = None) -> None:
     )
     parser.add_argument("--report")
     args = parser.parse_args(argv)
+    if args.truth_labels_root and args.recursive:
+        parser.error("--recursive applies only to --predictions")
     if args.dry_run:
         if args.make_zip:
             parser.error("--zip cannot be combined with --dry-run")
-        report = validate_prediction_inputs(
-            args.predictions, args.manifest, recursive=args.recursive
-        )
+        if args.predictions:
+            report = validate_prediction_inputs(
+                args.predictions, args.manifest, recursive=args.recursive
+            )
+        else:
+            report = validate_ground_truth_inputs(args.truth_labels_root, args.manifest)
     else:
         if not args.output:
             parser.error("--output is required unless --dry-run is used")
-        report = export_submission(
-            args.predictions,
-            args.manifest,
-            args.output,
-            overwrite=args.overwrite,
-            chunks=args.chunks,
-            recursive=args.recursive,
-        )
+        if args.predictions:
+            report = export_submission(
+                args.predictions,
+                args.manifest,
+                args.output,
+                overwrite=args.overwrite,
+                chunks=args.chunks,
+                recursive=args.recursive,
+            )
+        else:
+            report = export_ground_truth(
+                args.truth_labels_root,
+                args.manifest,
+                args.output,
+                overwrite=args.overwrite,
+                chunks=args.chunks,
+            )
         if args.make_zip:
             report["zip_path"] = str(zip_submission(report["output_path"]))
     if args.report:
@@ -962,6 +1246,12 @@ def validate_entry_point(argv: Sequence[str] | None = None) -> None:
     )
     parser.add_argument("--submission", required=True)
     parser.add_argument("--manifest", required=True)
+    parser.add_argument(
+        "--role",
+        choices=("prediction", "ground_truth"),
+        default="prediction",
+        help="Ground-truth mode permits integer IDs for instance-scored classes.",
+    )
     parser.add_argument("--skip-values", action="store_true")
     parser.add_argument("--skip-hierarchy", action="store_true")
     parser.add_argument(
@@ -975,6 +1265,7 @@ def validate_entry_point(argv: Sequence[str] | None = None) -> None:
     report = validate_submission(
         args.submission,
         args.manifest,
+        role=args.role,
         check_values=not args.skip_values,
         check_hierarchy=not args.skip_hierarchy,
     )

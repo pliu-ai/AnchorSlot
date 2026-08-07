@@ -12,7 +12,7 @@ set -euo pipefail
 
 : "${ANCHORSLOT_ROOT:?Set ANCHORSLOT_ROOT to the AnchorSlot repository}"
 : "${PREDICTIONS:?Set PREDICTIONS to merged validation NIfTI files}"
-: "${GROUND_TRUTH_MERGED:?Set GROUND_TRUTH_MERGED to merged GT NIfTI files}"
+: "${GROUND_TRUTH_LABELS_ROOT:?Set GROUND_TRUTH_LABELS_ROOT to the native per-class labels tree}"
 : "${MANIFEST:?Set MANIFEST to the annotation-only validation manifest}"
 : "${OUTPUT_DIR:?Set OUTPUT_DIR for Zarr stores and metrics}"
 : "${CSC_REPO:?Set CSC_REPO to a pinned official evaluator checkout}"
@@ -38,7 +38,7 @@ export PYTHONPATH="${ANCHORSLOT_ROOT}:${JOB_CSC}/src:${PYTHONPATH:-}"
   --report "${OUTPUT_DIR}/prediction_input_validation.json"
 
 "${PYTHON}" "${ANCHORSLOT_ROOT}/scripts/export_cellmap_submission.py" \
-  --predictions "${GROUND_TRUTH_MERGED}" \
+  --truth-labels-root "${GROUND_TRUTH_LABELS_ROOT}" \
   --manifest "${MANIFEST}" \
   --dry-run \
   --report "${OUTPUT_DIR}/ground_truth_input_validation.json"
@@ -51,7 +51,7 @@ export PYTHONPATH="${ANCHORSLOT_ROOT}:${JOB_CSC}/src:${PYTHONPATH:-}"
   --report "${OUTPUT_DIR}/prediction_export.json"
 
 "${PYTHON}" "${ANCHORSLOT_ROOT}/scripts/export_cellmap_submission.py" \
-  --predictions "${GROUND_TRUTH_MERGED}" \
+  --truth-labels-root "${GROUND_TRUTH_LABELS_ROOT}" \
   --manifest "${MANIFEST}" \
   --output "${OUTPUT_DIR}/ground_truth.zarr" \
   --overwrite \
@@ -65,6 +65,7 @@ export PYTHONPATH="${ANCHORSLOT_ROOT}:${JOB_CSC}/src:${PYTHONPATH:-}"
 "${PYTHON}" "${ANCHORSLOT_ROOT}/scripts/validate_cellmap_submission.py" \
   --submission "${OUTPUT_DIR}/ground_truth.zarr" \
   --manifest "${MANIFEST}" \
+  --role ground_truth \
   --report "${OUTPUT_DIR}/ground_truth_store_validation.json"
 
 env \
