@@ -205,10 +205,21 @@ class nnUNetTrainerResolutionAdaptiveHierarchicalParallelAnchorSlot(
                 primary_val = set(primary_splits[fold_index]["val"])
                 auxiliary_train = set(auxiliary_splits[fold_index]["train"])
                 auxiliary_val = set(auxiliary_splits[fold_index]["val"])
-                leakage = (primary_val & auxiliary_train) | (auxiliary_val & primary_train)
+                specimen = lambda key: key.rsplit("_crop", 1)[0]
+                primary_train_specimens = {specimen(key) for key in primary_train}
+                primary_val_specimens = {specimen(key) for key in primary_val}
+                auxiliary_train_specimens = {specimen(key) for key in auxiliary_train}
+                auxiliary_val_specimens = {specimen(key) for key in auxiliary_val}
+                leakage = (
+                    (primary_train_specimens & primary_val_specimens)
+                    | (auxiliary_train_specimens & auxiliary_val_specimens)
+                    | (primary_val_specimens & auxiliary_train_specimens)
+                    | (auxiliary_val_specimens & primary_train_specimens)
+                )
                 if leakage:
                     raise RuntimeError(
-                        "Cross-resolution train/validation leakage detected: "
+                        "Source-specimen train/validation leakage detected; use "
+                        "fold=all with the disjoint imagesTs cohorts for paper runs: "
                         f"{sorted(leakage)}"
                     )
 
