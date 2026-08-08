@@ -33,12 +33,20 @@ export nnUNet_n_proc_DA="${nnUNet_n_proc_DA:-4}"
 source "${REPO_ROOT}/configs/resolution_adaptive_hierarchical_anchorslot.env"
 cd "${REPO_ROOT}"
 
-for dataset in "${DATASET_ID}" "${NNUNET_RAHPA_AUX_DATASET_ID}"; do
-  if ! find "${nnUNet_preprocessed}" -maxdepth 1 -type d -name "Dataset$(printf '%03d' "${dataset}")_*" -print -quit | grep -q .; then
-    echo "Missing preprocessed Dataset$(printf '%03d' "${dataset}")" >&2
-    exit 1
-  fi
-done
+PRIMARY_DATASET_DIR="$(find "${nnUNet_preprocessed}" -maxdepth 1 -type d -name "Dataset$(printf '%03d' "${DATASET_ID}")_*" -print -quit)"
+AUX_DATASET_DIR="$(find "${nnUNet_preprocessed}" -maxdepth 1 -type d -name "Dataset$(printf '%03d' "${NNUNET_RAHPA_AUX_DATASET_ID}")_*" -print -quit)"
+if [[ -z "${PRIMARY_DATASET_DIR}" || -z "${AUX_DATASET_DIR}" ]]; then
+  echo "Missing primary or auxiliary preprocessed dataset directory" >&2
+  exit 1
+fi
+if [[ ! -d "${PRIMARY_DATASET_DIR}/${PLANS}_${CONFIGURATION}" ]]; then
+  echo "Missing ${PRIMARY_DATASET_DIR}/${PLANS}_${CONFIGURATION}; preprocess it first" >&2
+  exit 1
+fi
+if [[ ! -d "${AUX_DATASET_DIR}/${PLANS}_${NNUNET_RAHPA_AUX_CONFIGURATION}" ]]; then
+  echo "Missing ${AUX_DATASET_DIR}/${PLANS}_${NNUNET_RAHPA_AUX_CONFIGURATION}; preprocess it first" >&2
+  exit 1
+fi
 
 echo "[train] shared 4/32-nm RA-HPA; primary=${DATASET_ID}/${CONFIGURATION}; auxiliary=${NNUNET_RAHPA_AUX_DATASET_ID}/${NNUNET_RAHPA_AUX_CONFIGURATION}"
 echo "[train] native annotation masks: ${NNUNET_RAHPA_NATIVE_LABELS_ROOT}"
