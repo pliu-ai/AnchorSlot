@@ -186,14 +186,25 @@ class nnUNetTrainerResolutionAdaptiveHierarchicalParallelAnchorSlot(
 
         primary_splits_path = Path(self.preprocessed_dataset_folder_base) / "splits_final.json"
         auxiliary_splits_path = dataset_dir / "splits_final.json"
-        if primary_splits_path.is_file() and auxiliary_splits_path.is_file():
+        # ``fold=all`` is the paper-safe production mode: all development
+        # crops train the model and the separate imagesTs sets are the only
+        # evaluation cohorts. There is no internal train/validation boundary
+        # to audit in that mode (nnU-Net mirrors all cases into its monitoring
+        # loader), and ``self.fold`` is the string ``"all"`` rather than an
+        # integer.
+        if (
+            self.fold != "all"
+            and primary_splits_path.is_file()
+            and auxiliary_splits_path.is_file()
+        ):
             primary_splits = load_json(str(primary_splits_path))
             auxiliary_splits = load_json(str(auxiliary_splits_path))
-            if self.fold < min(len(primary_splits), len(auxiliary_splits)):
-                primary_train = set(primary_splits[self.fold]["train"])
-                primary_val = set(primary_splits[self.fold]["val"])
-                auxiliary_train = set(auxiliary_splits[self.fold]["train"])
-                auxiliary_val = set(auxiliary_splits[self.fold]["val"])
+            fold_index = int(self.fold)
+            if fold_index < min(len(primary_splits), len(auxiliary_splits)):
+                primary_train = set(primary_splits[fold_index]["train"])
+                primary_val = set(primary_splits[fold_index]["val"])
+                auxiliary_train = set(auxiliary_splits[fold_index]["train"])
+                auxiliary_val = set(auxiliary_splits[fold_index]["val"])
                 leakage = (primary_val & auxiliary_train) | (auxiliary_val & primary_train)
                 if leakage:
                     raise RuntimeError(

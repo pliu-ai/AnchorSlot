@@ -17,7 +17,9 @@ CONDA_ENV="${CONDA_ENV:-/projects/weilab/liupeng/conda/envs/ssl_seg}"
 NNUNET_DATA_ROOT="${NNUNET_DATA_ROOT:-/projects/weilab/liupeng/data/nnUNet}"
 DATASET_ID="${DATASET_ID:-200}"
 CONFIGURATION="${CONFIGURATION:-3d_lowres_large_patch}"
-FOLD="${FOLD:-0}"
+# Production uses every development crop and evaluates only on the disjoint
+# high-/low-resolution imagesTs cohorts. Override FOLD for debugging only.
+FOLD="${FOLD:-all}"
 PLANS="${PLANS:-nnUNetPlans}"
 TRAINER="nnUNetTrainerResolutionAdaptiveHierarchicalParallelAnchorSlot"
 
