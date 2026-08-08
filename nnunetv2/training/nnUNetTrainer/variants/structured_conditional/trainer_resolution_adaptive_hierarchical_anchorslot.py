@@ -470,7 +470,10 @@ class nnUNetTrainerResolutionAdaptiveHierarchicalParallelAnchorSlot(
                 "original31_dice": np.nan_to_num(dice, nan=0.0).tolist(),
                 "num_batches": len(selected),
             }
-            self.logger.log(f"mean_fg_dice_{key}", mean_dice, self.current_epoch)
+            # nnUNetLogger accepts only its fixed built-in keys. Resolution
+            # metrics are persisted in latest_resolution_validation.json and
+            # the text log below, while the built-in logger keeps the pooled
+            # mean Dice produced by the parent implementation.
         self._latest_structured_val_report["by_resolution"] = by_resolution
         if self.local_rank == 0:
             save_json(
