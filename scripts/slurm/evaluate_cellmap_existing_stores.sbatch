@@ -27,16 +27,30 @@ cp -a "${CSC_REPO}" "${JOB_CSC}"
 trap 'rm -rf "${JOB_CSC}"' EXIT
 export PYTHONPATH="${ANCHORSLOT_ROOT}:${JOB_CSC}/src:${PYTHONPATH:-}"
 
-"${PYTHON}" "${ANCHORSLOT_ROOT}/scripts/validate_cellmap_submission.py" \
-  --submission "${OUTPUT_DIR}/prediction.zarr" \
-  --manifest "${MANIFEST}" \
-  --report "${OUTPUT_DIR}/prediction_store_validation.json"
+if [[ "${SKIP_VALIDATION:-0}" == "1" ]]; then
+  "${PYTHON}" - "${OUTPUT_DIR}/prediction_store_validation.json" \
+    "${OUTPUT_DIR}/ground_truth_store_validation.json" <<'PY'
+import json
+import sys
 
-"${PYTHON}" "${ANCHORSLOT_ROOT}/scripts/validate_cellmap_submission.py" \
-  --submission "${OUTPUT_DIR}/ground_truth.zarr" \
-  --manifest "${MANIFEST}" \
-  --role ground_truth \
-  --report "${OUTPUT_DIR}/ground_truth_store_validation.json"
+for path in sys.argv[1:]:
+    with open(path, encoding="utf-8") as f:
+        report = json.load(f)
+    if report.get("status") != "valid":
+        raise SystemExit(f"Refusing to skip invalid or missing validation report: {path}")
+PY
+else
+  "${PYTHON}" "${ANCHORSLOT_ROOT}/scripts/validate_cellmap_submission.py" \
+    --submission "${OUTPUT_DIR}/prediction.zarr" \
+    --manifest "${MANIFEST}" \
+    --report "${OUTPUT_DIR}/prediction_store_validation.json"
+
+  "${PYTHON}" "${ANCHORSLOT_ROOT}/scripts/validate_cellmap_submission.py" \
+    --submission "${OUTPUT_DIR}/ground_truth.zarr" \
+    --manifest "${MANIFEST}" \
+    --role ground_truth \
+    --report "${OUTPUT_DIR}/ground_truth_store_validation.json"
+fi
 
 env \
   CSC_TEST_CROP_MANIFEST_URL="${MANIFEST}" \

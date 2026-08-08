@@ -85,8 +85,18 @@ class nnUNetTrainerResolutionAdaptiveHierarchicalParallelAnchorSlot(
 ):
     """Resolution-aware, annotation-aware HPA trainer for high/low CellMap data."""
 
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        plans: dict,
+        configuration: str,
+        fold: int,
+        dataset_json: dict,
+        unpack_dataset: bool = True,
+        device: torch.device = torch.device("cuda"),
+    ) -> None:
+        super().__init__(
+            plans, configuration, fold, dataset_json, unpack_dataset, device
+        )
         self.native_labels_root = os.environ.get("NNUNET_RAHPA_NATIVE_LABELS_ROOT")
         self._annotation_cache: Dict[str, Tuple[torch.Tensor, torch.Tensor]] = {}
         self.ra_loss_cfg = ResolutionAdaptiveLossConfig(
