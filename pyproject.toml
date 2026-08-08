@@ -65,6 +65,7 @@ anchorslot_build_cellmap_validation_manifest = "nnunetv2.evaluation.cellmap_chal
 anchorslot_build_cellmap_annotated_validation_manifest = "nnunetv2.evaluation.cellmap_challenge:build_annotated_manifest_entry_point"
 anchorslot_export_cellmap_submission = "nnunetv2.evaluation.cellmap_challenge:export_entry_point"
 anchorslot_validate_cellmap_submission = "nnunetv2.evaluation.cellmap_challenge:validate_entry_point"
+anchorslot_cellmap_evaluation = "nnunetv2.evaluation.cellmap_pipeline:main"
 nnUNetv2_plan_and_preprocess = "nnunetv2.experiment_planning.plan_and_preprocess_entrypoints:plan_and_preprocess_entry"
 nnUNetv2_extract_fingerprint = "nnunetv2.experiment_planning.plan_and_preprocess_entrypoints:extract_fingerprint_entry"
 nnUNetv2_plan_experiment = "nnunetv2.experiment_planning.plan_and_preprocess_entrypoints:plan_experiment_entry"
