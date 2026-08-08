@@ -23,6 +23,7 @@ from .resolution_adaptive_mapping import (
     ATOMIC_NAMES,
     NUM_PARENT_CLASSES,
     PARENT_NAMES,
+    build_parent_targets,
 )
 from .structured_loss_resolution_adaptive_hierarchical_anchorslot import (
     ResolutionAdaptiveHierarchicalAnchorSlotLoss,
@@ -436,16 +437,57 @@ class nnUNetTrainerResolutionAdaptiveHierarchicalParallelAnchorSlot(
             tp[label - 1] = torch.count_nonzero(pred_label & ref_label).item()
             fp[label - 1] = torch.count_nonzero(pred_label & ~ref_label).item()
             fn[label - 1] = torch.count_nonzero(~pred_label & ref_label).item()
+
+        parent_logits = output["parent_logits"]
+        if isinstance(parent_logits, (tuple, list)):
+            parent_logits = parent_logits[0]
+        parent_prediction = torch.sigmoid(parent_logits) >= 0.5
+        parent_reference = build_parent_targets(target_main, valid[:, None]).bool()
+        parent_tp = np.zeros(NUM_PARENT_CLASSES, dtype=np.float64)
+        parent_fp = np.zeros_like(parent_tp)
+        parent_fn = np.zeros_like(parent_tp)
+        for label in range(NUM_PARENT_CLASSES):
+            batch_active = active_parent[:, label].view(
+                -1, *([1] * (reference.ndim - 1))
+            )
+            label_valid = valid & batch_active
+            pred_label = parent_prediction[:, label] & label_valid
+            ref_label = parent_reference[:, label] & label_valid
+            parent_tp[label] = torch.count_nonzero(pred_label & ref_label).item()
+            parent_fp[label] = torch.count_nonzero(pred_label & ~ref_label).item()
+            parent_fn[label] = torch.count_nonzero(~pred_label & ref_label).item()
         return {
             "loss": loss.detach().cpu().numpy(),
             "tp": tp,
             "fp": fp,
             "fn": fn,
+            "parent_tp": parent_tp,
+            "parent_fp": parent_fp,
+            "parent_fn": parent_fn,
             "resolution_nm": float(voxel_size.mean().detach().cpu()),
         }
 
     def on_validation_epoch_end(self, val_outputs: List[dict]):
         super().on_validation_epoch_end(val_outputs)
+        parent_tp = np.sum([output["parent_tp"] for output in val_outputs], axis=0)
+        parent_fp = np.sum([output["parent_fp"] for output in val_outputs], axis=0)
+        parent_fn = np.sum([output["parent_fn"] for output in val_outputs], axis=0)
+        if self.is_ddp:
+            parent_tp, parent_fp, parent_fn = self._ddp_sum(parent_tp), self._ddp_sum(parent_fp), self._ddp_sum(parent_fn)
+        parent_denominator = 2.0 * parent_tp + parent_fp + parent_fn
+        parent_dice = np.divide(
+            2.0 * parent_tp, parent_denominator,
+            out=np.full_like(parent_denominator, np.nan, dtype=np.float64),
+            where=parent_denominator > 0,
+        )
+        mean_parent_dice = (
+            float(np.nanmean(parent_dice))
+            if np.any(np.isfinite(parent_dice)) else 0.0
+        )
+        self._latest_structured_val_report["summary"]["mean_parent17_dice"] = mean_parent_dice
+        self._latest_structured_val_report["parent17_dice"] = np.nan_to_num(
+            parent_dice, nan=0.0
+        ).tolist()
         by_resolution = {}
         for resolution in sorted({float(output["resolution_nm"]) for output in val_outputs}):
             selected = [
@@ -464,10 +506,46 @@ class nnUNetTrainerResolutionAdaptiveHierarchicalParallelAnchorSlot(
                 where=denominator > 0,
             )
             mean_dice = float(np.nanmean(dice)) if np.any(np.isfinite(dice)) else 0.0
+            resolution_parent_tp = np.sum(
+                [output["parent_tp"] for output in selected], axis=0
+            )
+            resolution_parent_fp = np.sum(
+                [output["parent_fp"] for output in selected], axis=0
+            )
+            resolution_parent_fn = np.sum(
+                [output["parent_fn"] for output in selected], axis=0
+            )
+            if self.is_ddp:
+                resolution_parent_tp, resolution_parent_fp, resolution_parent_fn = (
+                    self._ddp_sum(resolution_parent_tp),
+                    self._ddp_sum(resolution_parent_fp),
+                    self._ddp_sum(resolution_parent_fn),
+                )
+            resolution_parent_denominator = (
+                2.0 * resolution_parent_tp
+                + resolution_parent_fp
+                + resolution_parent_fn
+            )
+            resolution_parent_dice = np.divide(
+                2.0 * resolution_parent_tp,
+                resolution_parent_denominator,
+                out=np.full_like(
+                    resolution_parent_denominator, np.nan, dtype=np.float64
+                ),
+                where=resolution_parent_denominator > 0,
+            )
+            mean_resolution_parent_dice = (
+                float(np.nanmean(resolution_parent_dice))
+                if np.any(np.isfinite(resolution_parent_dice)) else 0.0
+            )
             key = f"{resolution:g}nm"
             by_resolution[key] = {
                 "mean_original31_dice": mean_dice,
                 "original31_dice": np.nan_to_num(dice, nan=0.0).tolist(),
+                "mean_parent17_dice": mean_resolution_parent_dice,
+                "parent17_dice": np.nan_to_num(
+                    resolution_parent_dice, nan=0.0
+                ).tolist(),
                 "num_batches": len(selected),
             }
             # nnUNetLogger accepts only its fixed built-in keys. Resolution
@@ -493,6 +571,17 @@ class nnUNetTrainerResolutionAdaptiveHierarchicalParallelAnchorSlot(
         for loader in (train_loader, val_loader):
             if isinstance(loader, _MixedResolutionIterator):
                 loader.finish_children()
+
+    def perform_actual_validation(self, save_probabilities: bool = False):
+        """Allow runtime smokes to stop before nnU-Net's full-volume export."""
+        if os.environ.get(
+            "NNUNET_RAHPA_SKIP_ACTUAL_VALIDATION", "0"
+        ).lower() in {"1", "true", "yes"}:
+            self.print_to_log_file(
+                "[ResolutionAdaptiveHPA] skipping full-volume validation by request"
+            )
+            return None
+        return super().perform_actual_validation(save_probabilities)
 
     @torch.no_grad()
     def infer_hierarchy(

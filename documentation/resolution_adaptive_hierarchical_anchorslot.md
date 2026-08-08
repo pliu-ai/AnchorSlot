@@ -37,7 +37,8 @@ resampling every case to one common physical scale. The paper configuration is:
 - auxiliary: Dataset201, `3d_fullres`, 32 nm;
 - auxiliary sampling probability: 0.5;
 - shared model and optimizer; separate augmentation streams;
-- validation alternates both streams and logs Dice by resolution.
+- validation alternates both streams and logs both atomic-31 and official
+  parent-17 Dice by resolution.
 
 The production script defaults to `fold=all`: all 202 high-resolution and 40
 low-resolution development crops are used for fitting, and model selection and
