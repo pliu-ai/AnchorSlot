@@ -30,12 +30,19 @@ if [[ "${SLURM_ARRAY_TASK_ID}" == "0" ]]; then
   DATASET="Dataset200_Dataset101_CellMap_model_high_res"
   TRUTH_LOCK="${TRUTH_ROOT}/high_4nm/truth_lock.json"
   COMMON_TRUTH_LOCK="${TRUTH_ROOT}/common_parent_instance_high_4nm/truth_lock.json"
+  PREPROCESSING_ARGS=()
 else
   RESOLUTION="32nm"
   VOXEL_SIZE_NM="32"
   DATASET="Dataset201_Dataset101_CellMap_model_low_res"
   TRUTH_LOCK="${TRUTH_ROOT}/low_32nm/truth_lock.json"
   COMMON_TRUTH_LOCK="${TRUTH_ROOT}/low_32nm/truth_lock.json"
+  # The shared network is defined by the 4-nm model folder, but the 32-nm
+  # stream was trained with Dataset201's native-resolution preprocessing plan.
+  PREPROCESSING_ARGS=(
+    --preprocessing_dataset_dir "${NNUNET_DATA_ROOT}/nnUNet_preprocessed/${DATASET}"
+    --preprocessing_configuration "${NNUNET_RAHPA_AUX_CONFIGURATION:-3d_fullres}"
+  )
 fi
 
 INPUT_DIR="${NNUNET_DATA_ROOT}/nnUNet_raw/${DATASET}/imagesTs"
@@ -67,6 +74,7 @@ python scripts/predict_structured_conditional.py \
   --group_id 0 \
   --output_mode original \
   --voxel_size_nm "${VOXEL_SIZE_NM}" \
+  "${PREPROCESSING_ARGS[@]}" \
   --continue_prediction \
   --disable_progress_bar \
   -npp "${NPP:-3}" \

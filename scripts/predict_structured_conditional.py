@@ -24,6 +24,7 @@ from nnunetv2.inference.sliding_window_prediction import compute_gaussian
 from nnunetv2.utilities.file_path_utilities import get_output_folder
 from nnunetv2.utilities.helpers import empty_cache, dummy_context
 from nnunetv2.utilities.label_handling.label_handling import LabelManager
+from nnunetv2.utilities.plans_handling.plans_handler import PlansManager
 
 
 def _normalize_optional_string(value: object) -> str:
@@ -39,6 +40,31 @@ def _load_json_if_exists(path: str) -> Dict[str, object]:
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
     return data if isinstance(data, dict) else {}
+
+
+def _load_preprocessing_configuration(
+    dataset_dir: str,
+    configuration_name: str,
+    plans_name: str,
+):
+    dataset_dir = os.path.abspath(str(dataset_dir))
+    plans_path = join(dataset_dir, f"{plans_name}.json")
+    dataset_json_path = join(dataset_dir, "dataset.json")
+    if not os.path.isfile(plans_path):
+        raise FileNotFoundError(f"Preprocessing plans not found: {plans_path}")
+    if not os.path.isfile(dataset_json_path):
+        raise FileNotFoundError(f"Preprocessing dataset metadata not found: {dataset_json_path}")
+
+    plans = _load_json_if_exists(plans_path)
+    dataset_json = _load_json_if_exists(dataset_json_path)
+    if not plans:
+        raise RuntimeError(f"Preprocessing plans are empty or invalid: {plans_path}")
+    if not dataset_json:
+        raise RuntimeError(f"Preprocessing dataset metadata is empty or invalid: {dataset_json_path}")
+
+    plans_manager = PlansManager(plans)
+    configuration_manager = plans_manager.get_configuration(str(configuration_name))
+    return plans_manager, configuration_manager, dataset_json, plans_path, dataset_json_path
 
 
 def _infer_text_fusion_from_log(debug_data: Dict[str, object]) -> str:
@@ -481,6 +507,7 @@ class StructuredConditionalPredictor(nnUNetPredictor):
         ] = None
         self._expected_original_labels_for_group: Optional[Callable[[int], set]] = None
         self._expected_original_labels_merged: Optional[set] = None
+        self.preprocessing_override_metadata: Optional[Dict[str, object]] = None
 
     def initialize_from_trained_model_folder(
         self,
@@ -541,6 +568,101 @@ class StructuredConditionalPredictor(nnUNetPredictor):
             self.structured_label_manager = _build_structured_9_label_manager()
         if "StructuredConditionalNoSlot3ERDynamic" in str(self.trainer_name):
             self.structured_label_manager = _build_structured_9_label_manager()
+
+    def override_preprocessing_configuration(
+        self,
+        dataset_dir: str,
+        configuration_name: str,
+        plans_name: str = "nnUNetPlans",
+    ) -> None:
+        """Use an auxiliary dataset plan for preprocessing and export only.
+
+        The network and checkpoint have already been constructed from the model
+        folder's plan. RA-HPA was trained with a second, native-resolution
+        Dataset201 loader, so low-resolution inference must reproduce that
+        loader's spacing and patch size without rebuilding the shared network.
+        """
+        if self.network is None or self.configuration_manager is None:
+            raise RuntimeError("Initialize the trained model before overriding preprocessing.")
+        if not self.is_hierarchical_parallel:
+            raise RuntimeError(
+                "A preprocessing-plan override is currently supported only for "
+                "Hierarchical Parallel AnchorSlot checkpoints."
+            )
+
+        (
+            preprocessing_plans_manager,
+            preprocessing_configuration_manager,
+            preprocessing_dataset_json,
+            plans_path,
+            dataset_json_path,
+        ) = _load_preprocessing_configuration(dataset_dir, configuration_name, plans_name)
+
+        model_patch_size = tuple(int(v) for v in self.configuration_manager.patch_size)
+        preprocessing_patch_size = tuple(
+            int(v) for v in preprocessing_configuration_manager.patch_size
+        )
+        if len(model_patch_size) != len(preprocessing_patch_size):
+            raise ValueError(
+                "Model and preprocessing configurations must have the same spatial dimensionality: "
+                f"model={model_patch_size}, preprocessing={preprocessing_patch_size}"
+            )
+        if preprocessing_configuration_manager.previous_stage_name is not None:
+            raise ValueError(
+                "The preprocessing override must not require a previous cascade stage: "
+                f"configuration={configuration_name}, "
+                f"previous_stage={preprocessing_configuration_manager.previous_stage_name}"
+            )
+
+        model_channels = self.dataset_json.get("channel_names") or self.dataset_json.get("modality")
+        preprocessing_channels = (
+            preprocessing_dataset_json.get("channel_names")
+            or preprocessing_dataset_json.get("modality")
+        )
+        if model_channels != preprocessing_channels:
+            raise ValueError(
+                "Model and preprocessing datasets have different input-channel metadata: "
+                f"model={model_channels}, preprocessing={preprocessing_channels}"
+            )
+        if self.dataset_json.get("labels") != preprocessing_dataset_json.get("labels"):
+            raise ValueError(
+                "Model and preprocessing datasets must use identical labels for RA-HPA export."
+            )
+        if self.dataset_json.get("file_ending") != preprocessing_dataset_json.get("file_ending"):
+            raise ValueError(
+                "Model and preprocessing datasets must use the same file ending: "
+                f"model={self.dataset_json.get('file_ending')}, "
+                f"preprocessing={preprocessing_dataset_json.get('file_ending')}"
+            )
+
+        model_spacing = tuple(float(v) for v in self.configuration_manager.spacing)
+        preprocessing_spacing = tuple(
+            float(v) for v in preprocessing_configuration_manager.spacing
+        )
+        self.plans_manager = preprocessing_plans_manager
+        self.configuration_manager = preprocessing_configuration_manager
+        self.dataset_json = preprocessing_dataset_json
+        self.label_manager = preprocessing_plans_manager.get_label_manager(
+            preprocessing_dataset_json
+        )
+        self.preprocessing_override_metadata = {
+            "dataset_dir": os.path.abspath(str(dataset_dir)),
+            "plans_path": plans_path,
+            "dataset_json_path": dataset_json_path,
+            "plans_name": str(plans_name),
+            "configuration": str(configuration_name),
+            "model_spacing": list(model_spacing),
+            "preprocessing_spacing": list(preprocessing_spacing),
+            "model_patch_size": list(model_patch_size),
+            "preprocessing_patch_size": list(preprocessing_patch_size),
+        }
+        print(
+            "[StructuredConditionalPredict] preprocessing override: "
+            f"dataset={os.path.basename(os.path.abspath(str(dataset_dir)))} "
+            f"configuration={configuration_name} "
+            f"spacing={preprocessing_spacing} patch_size={preprocessing_patch_size} "
+            f"(model spacing={model_spacing}, model patch_size={model_patch_size})"
+        )
 
     def _make_group_ids(self, batch_size: int, device: torch.device) -> torch.Tensor:
         return torch.full((int(batch_size),), int(self.group_id), dtype=torch.long, device=device)
@@ -1001,6 +1123,28 @@ def _build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("-num_parts", type=int, required=False, default=1)
     parser.add_argument("-part_id", type=int, required=False, default=0)
     parser.add_argument("-prev_stage_predictions", type=str, required=False, default=None)
+    parser.add_argument(
+        "--preprocessing_dataset_dir",
+        type=str,
+        default=None,
+        help=(
+            "Optional preprocessed auxiliary dataset directory whose plan is used only for raw-data "
+            "preprocessing, sliding-window patching, and export. The network remains defined by -m. "
+            "RA-HPA 32-nm inference should point this to Dataset201_* under nnUNet_preprocessed."
+        ),
+    )
+    parser.add_argument(
+        "--preprocessing_configuration",
+        type=str,
+        default=None,
+        help="Configuration within --preprocessing_dataset_dir, for example 3d_fullres.",
+    )
+    parser.add_argument(
+        "--preprocessing_plans_name",
+        type=str,
+        default="nnUNetPlans",
+        help="Plans JSON stem in --preprocessing_dataset_dir.",
+    )
 
     parser.add_argument("-device", type=str, default="cuda", required=False, choices=("cpu", "cuda", "mps"))
     parser.add_argument(
@@ -1145,6 +1289,35 @@ def main() -> None:
         checkpoint_name=str(args.chk),
     )
 
+    has_preprocessing_dataset = args.preprocessing_dataset_dir is not None
+    has_preprocessing_configuration = args.preprocessing_configuration is not None
+    if has_preprocessing_dataset != has_preprocessing_configuration:
+        raise ValueError(
+            "--preprocessing_dataset_dir and --preprocessing_configuration must be provided together."
+        )
+    if has_preprocessing_dataset:
+        predictor.override_preprocessing_configuration(
+            dataset_dir=str(args.preprocessing_dataset_dir),
+            configuration_name=str(args.preprocessing_configuration),
+            plans_name=str(args.preprocessing_plans_name),
+        )
+
+    if predictor.is_hierarchical_parallel and voxel_size_nm is not None:
+        preprocessing_spacing = tuple(float(v) for v in predictor.configuration_manager.spacing)
+        conditioning_spacing = voxel_size_nm
+        if len(conditioning_spacing) == 1:
+            conditioning_spacing = conditioning_spacing * len(preprocessing_spacing)
+        if len(conditioning_spacing) != len(preprocessing_spacing) or not np.allclose(
+            conditioning_spacing,
+            preprocessing_spacing,
+        ):
+            raise ValueError(
+                "RA-HPA voxel-size conditioning must match the preprocessing target spacing. "
+                f"conditioning={conditioning_spacing}, preprocessing={preprocessing_spacing}. "
+                "For native 32-nm inference, provide Dataset201 with "
+                "--preprocessing_dataset_dir and --preprocessing_configuration 3d_fullres."
+            )
+
     if not run_all_groups and group_id >= int(predictor.num_dynamic_groups):
         raise ValueError(
             f"--group_id must be in [0, {int(predictor.num_dynamic_groups) - 1}] for "
@@ -1166,6 +1339,7 @@ def main() -> None:
             "voxel_size_nm": list(voxel_size_nm) if voxel_size_nm is not None else None,
             "trainer_name": str(predictor.trainer_name),
             "num_dynamic_groups": int(predictor.num_dynamic_groups),
+            "preprocessing_override": predictor.preprocessing_override_metadata,
         },
         join(args.o, "structured_predict_config.json"),
         sort_keys=False,
@@ -1182,6 +1356,8 @@ def main() -> None:
         f" inference_padding_mode={args.inference_padding_mode}"
         f" inference_border_mirror_pad_size={args.inference_border_mirror_pad_size}"
         f" voxel_size_nm={voxel_size_nm}"
+        f" preprocessing_spacing={tuple(predictor.configuration_manager.spacing)}"
+        f" preprocessing_patch_size={tuple(predictor.configuration_manager.patch_size)}"
         f" checkpoint={args.chk}"
     )
 
