@@ -64,7 +64,9 @@ class StructuredConditionalDataLoader3D(nnUNetDataLoaderBase):
 
             shape = data.shape[1:]
             dim = len(shape)
-            bbox_lbs, bbox_ubs = self.get_bbox(shape, force_fg, properties["class_locations"])
+            bbox_lbs, bbox_ubs = self.get_bbox_for_group(
+                shape, force_fg, properties["class_locations"], int(group_ids[j])
+            )
 
             valid_bbox_lbs = np.clip(bbox_lbs, a_min=0, a_max=None)
             valid_bbox_ubs = np.minimum(shape, bbox_ubs)
@@ -116,3 +118,7 @@ class StructuredConditionalDataLoader3D(nnUNetDataLoaderBase):
             "keys": chosen_keys,
             "group_id": group_ids,
         }
+
+    def get_bbox_for_group(self, shape, force_fg, class_locations, group_id):
+        """Legacy sampling; subclasses may align the foreground crop to the query."""
+        return self.get_bbox(shape, force_fg, class_locations)

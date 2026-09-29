@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Sequence, Set
+from typing import Dict, List, Mapping, Optional, Sequence, Set
 
 import numpy as np
 import torch
@@ -10,9 +10,29 @@ from nnunetv2.training.dataloading.base_data_loader import nnUNetDataLoaderBase
 
 from .label_mapping_er_dynamic import (
     NUM_DYNAMIC_GROUPS,
+    get_group_spec,
     infer_present_groups_from_class_locations,
     sample_group_id_for_case,
 )
+
+
+def select_query_foreground_class(
+    class_locations: Mapping,
+    group_id: int,
+    rng: np.random.Generator,
+) -> Optional[int]:
+    """
+    Pick one original label of the queried group that has foreground locations in this case,
+    uniformly at random; None when the group is absent (then the default nnU-Net choice applies).
+    """
+    candidates = [
+        int(label)
+        for label in get_group_spec(int(group_id)).original_labels
+        if len(class_locations.get(int(label), ())) > 0
+    ]
+    if not candidates:
+        return None
+    return int(candidates[int(rng.integers(len(candidates)))])
 
 
 class StructuredConditionalDataLoader3D(nnUNetDataLoaderBase):
@@ -30,9 +50,13 @@ class StructuredConditionalDataLoader3D(nnUNetDataLoaderBase):
         seed: Optional[int] = None,
         group_sampling_mode: str = "random",
         group_balance_power: float = 1.0,
+        query_aware_foreground: bool = False,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
+        # Force-foreground samples are centred on a voxel of the queried group (when present)
+        # instead of on a random foreground class. Off reproduces nnU-Net's default choice.
+        self.query_aware_foreground = bool(query_aware_foreground)
         self.p_present_group = float(np.clip(p_present_group, 0.0, 1.0))
         self.rng = np.random.default_rng(seed)
         self._case_present_group_cache: Dict[str, Sequence[int]] = {}
@@ -105,7 +129,14 @@ class StructuredConditionalDataLoader3D(nnUNetDataLoaderBase):
 
             shape = data.shape[1:]
             dim = len(shape)
-            bbox_lbs, bbox_ubs = self.get_bbox(shape, force_fg, properties["class_locations"])
+            overwrite_class = None
+            if force_fg and self.query_aware_foreground:
+                overwrite_class = select_query_foreground_class(
+                    properties["class_locations"], int(group_ids[j]), self.rng
+                )
+            bbox_lbs, bbox_ubs = self.get_bbox(
+                shape, force_fg, properties["class_locations"], overwrite_class=overwrite_class
+            )
 
             valid_bbox_lbs = np.clip(bbox_lbs, a_min=0, a_max=None)
             valid_bbox_ubs = np.minimum(shape, bbox_ubs)

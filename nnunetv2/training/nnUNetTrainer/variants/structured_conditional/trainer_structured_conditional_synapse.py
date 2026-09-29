@@ -141,6 +141,7 @@ class nnUNetTrainerStructuredConditionalSynapse(nnUNetTrainer):
     """
 
     default_amp_dtype = "float16"
+    structured_dataloader_class = None
 
     def __init__(
         self,
@@ -900,7 +901,8 @@ class nnUNetTrainerStructuredConditionalSynapse(nnUNetTrainer):
                 transforms=val_transforms,
             )
         else:
-            dl_tr = StructuredConditionalDataLoader3D(
+            loader_class = self.structured_dataloader_class or StructuredConditionalDataLoader3D
+            dl_tr = loader_class(
                 dataset_tr,
                 self.batch_size,
                 initial_patch_size,
@@ -1190,7 +1192,7 @@ class nnUNetTrainerStructuredConditionalSynapse(nnUNetTrainer):
 
             losses.append(float(loss.detach().cpu().item()))
 
-            output_main = get_main_output(output)
+            output_main = self.prepare_group_logits(get_main_output(output), group_id)
             target_main = remapped_target[0] if isinstance(remapped_target, list) else remapped_target
             valid_main = valid_mask[0] if isinstance(valid_mask, list) else valid_mask
 
@@ -1322,15 +1324,24 @@ class nnUNetTrainerStructuredConditionalSynapse(nnUNetTrainer):
     @torch.no_grad()
     def infer_logits_for_group(self, image: torch.Tensor, group_id: int, use_amp: bool = True) -> torch.Tensor:
         self.network.eval()
-        return predict_logits_for_group(self.network, image, group_id=group_id, use_amp=use_amp)
+        return self.prepare_group_logits(
+            predict_logits_for_group(self.network, image, group_id=group_id, use_amp=use_amp), group_id
+        )
 
     @torch.no_grad()
     def infer_logits_all_groups(self, image: torch.Tensor, use_amp: bool = True):
         self.network.eval()
-        return predict_logits_all_groups(self.network, image, use_amp=use_amp)
+        return {
+            group_id: self.prepare_group_logits(logits, group_id)
+            for group_id, logits in predict_logits_all_groups(self.network, image, use_amp=use_amp).items()
+        }
 
     @torch.no_grad()
     def infer_reconstruct_original_all_groups(self, image: torch.Tensor, use_amp: bool = True):
         self.network.eval()
-        logits_by_group = predict_logits_all_groups(self.network, image, use_amp=use_amp)
+        logits_by_group = self.infer_logits_all_groups(image, use_amp=use_amp)
         return reconstruct_original_labels_from_all_groups(logits_by_group)
+
+    def prepare_group_logits(self, logits: torch.Tensor, group_id: int) -> torch.Tensor:
+        """Identity for historical trainers; corrected variants mask inactive slots."""
+        return logits

@@ -11,12 +11,17 @@ from torch import nn
 from nnunetv2.utilities.ddp_allgather import AllGatherGrad
 
 from .label_mapping_er_dynamic import (
+    BACKGROUND_CHANNEL,
     COND_SLOT_1_CHANNEL,
     COND_SLOT_2_CHANNEL,
     COND_SLOT_3_CHANNEL,
+    ECS_CHANNEL,
+    NUCPL_CHANNEL,
     NUM_OUTPUT_CHANNELS,
     OTHER_CHANNEL,
 )
+
+SUPPRESSION_MODES = ("pooled", "region_balanced")
 
 
 @dataclass
@@ -41,6 +46,13 @@ class StructuredLossConfig:
     class_balance_max_weight: float = 4.0
     class_balance_eps: float = 1e-6
 
+    # Drop Dice entries whose ground truth is empty (per sample, or per batch with batch_dice),
+    # instead of averaging in their near-constant ~1 loss. Off reproduces the original loss.
+    dice_exclude_empty_gt: bool = False
+    # 'pooled': mean over all non-slot voxels (original, background-dominated);
+    # 'region_balanced': mean of the background, anchor and non-query-foreground region means.
+    suppression_mode: str = "pooled"
+
 
 class StructuredConditionalLoss(nn.Module):
     """
@@ -56,6 +68,11 @@ class StructuredConditionalLoss(nn.Module):
     def __init__(self, config: Optional[StructuredLossConfig] = None) -> None:
         super().__init__()
         self.config = config if config is not None else StructuredLossConfig()
+        if str(self.config.suppression_mode) not in SUPPRESSION_MODES:
+            raise ValueError(
+                f"StructuredLossConfig.suppression_mode must be one of {SUPPRESSION_MODES}, "
+                f"got {self.config.suppression_mode!r}"
+            )
 
     @staticmethod
     def _expand_per_class_mask(class_mask: torch.Tensor, ndim: int) -> torch.Tensor:
@@ -246,6 +263,9 @@ class StructuredConditionalLoss(nn.Module):
             if self.config.ddp and dist.is_available() and dist.is_initialized():
                 dist.all_reduce(valid_classes, op=dist.ReduceOp.MAX)
             valid_classes = valid_classes.bool()
+            if self.config.dice_exclude_empty_gt:
+                # gt_sum is already summed over the (DDP-gathered) batch, so every rank agrees.
+                valid_classes = valid_classes & (gt_sum.detach() > 0)
 
             if not torch.any(valid_classes):
                 return self._safe_zero(logits)
@@ -253,6 +273,8 @@ class StructuredConditionalLoss(nn.Module):
 
         dice = (2.0 * intersect + self.config.smooth) / (pred_sum + gt_sum + self.config.smooth).clamp_min(1e-8)
         valid_entries = class_mask
+        if self.config.dice_exclude_empty_gt:
+            valid_entries = valid_entries & (gt_sum.detach() > 0)
         if not torch.any(valid_entries):
             return self._safe_zero(logits)
         return 1.0 - dice[valid_entries].mean()
@@ -288,9 +310,43 @@ class StructuredConditionalLoss(nn.Module):
         cond_region = ((target >= COND_SLOT_1_CHANNEL) & (target <= COND_SLOT_3_CHANNEL)).float()
         suppression_region = valid_mask.float() * (1.0 - cond_region)
 
+        if self.config.suppression_mode == "region_balanced":
+            return self._region_balanced_suppression(cond_probs, active, target, valid_mask, logits)
+
         numer = (cond_probs * active * suppression_region).sum()
         denom = (active * suppression_region).sum().clamp_min(1.0)
         return numer / denom
+
+    def _region_balanced_suppression(
+        self,
+        cond_probs: torch.Tensor,
+        active: torch.Tensor,
+        target: torch.Tensor,
+        valid_mask: torch.Tensor,
+        logits: torch.Tensor,
+    ) -> torch.Tensor:
+        """
+        Mean over the background, fixed-anchor and non-query-foreground regions of the
+        per-region mean active-slot probability, so rare hard negatives (anchors, other
+        organelles) are not outweighed by background voxels. Empty regions are skipped.
+        """
+        del logits
+        valid = valid_mask.float()
+        regions = (
+            target == BACKGROUND_CHANNEL,
+            (target >= ECS_CHANNEL) & (target <= NUCPL_CHANNEL),
+            target == OTHER_CHANNEL,
+        )
+        numers, denoms = [], []
+        for region in regions:
+            weight = active * (region.float() * valid)
+            numers.append((cond_probs * weight).sum())
+            denoms.append(weight.sum())
+        numer = torch.stack(numers)
+        denom = torch.stack(denoms)
+        present = (denom > 0).to(numer.dtype)
+        # Sync-free mean over non-empty regions; all-empty gives a graph-connected zero.
+        return (present * numer / denom.clamp_min(1.0)).sum() / present.sum().clamp_min(1.0)
 
     def forward(
         self,

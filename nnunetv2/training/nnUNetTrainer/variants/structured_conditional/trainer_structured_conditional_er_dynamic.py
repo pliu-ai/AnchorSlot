@@ -940,7 +940,23 @@ class nnUNetTrainerStructuredConditionalERDynamic(nnUNetTrainer):
                 f"gradient norm={grad_norm_value} at epoch {self.current_epoch}; "
                 f"skip_count={self._nonfinite_grad_skip_count}"
             )
-        return {"loss": loss.detach().cpu().numpy()}
+        # Return the same key set as a normal train_step so on_train_epoch_end can collate outputs.
+        loss_value = loss.detach().cpu().numpy()
+        return {
+            "loss": loss_value,
+            "structured_loss": loss_value,
+            "text_contrast_loss": np.zeros_like(loss_value),
+            "text_contrast_num_samples": 0,
+            "text_contrast_num_labels": 0,
+            "text_contrast_sampled_label_ids": [],
+            "text_contrast_missing_label_ids": [],
+            "text_generated_slot_active_slots": 0,
+            "text_generated_slot_inactive_slots": 0,
+            "text_generated_slot_logit_mean": 0.0,
+            "text_generated_slot_logit_std": 0.0,
+            "text_generated_slot_logit_min": 0.0,
+            "text_generated_slot_logit_max": 0.0,
+        }
 
     def _sample_group_ids_from_target(self, target_high: torch.Tensor) -> torch.Tensor:
         sampled: List[int] = []
@@ -1192,6 +1208,7 @@ class nnUNetTrainerStructuredConditionalERDynamic(nnUNetTrainer):
                 seed=self.group_sampling_seed + int(self.local_rank),
                 group_sampling_mode=self.group_sampling_mode,
                 group_balance_power=self.group_balance_power,
+                query_aware_foreground=bool(getattr(self, "query_aware_foreground", False)),
             )
             dl_val = nnUNetDataLoader3D(
                 dataset_val,
