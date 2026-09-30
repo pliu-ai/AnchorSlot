@@ -21,7 +21,9 @@ commit `0300239`) on the 17 internal validation crops
 | Synapse CT | `trainer_synapse_reconstruction.py` (`nnUNetTrainerSynapseReconstructionScreen`), `synapse_reconstruction.py`; run drivers `scripts/run_synapse_fold0_followup.py` (arm `lr003`), `scripts/continue_synapse_masked.py`, `scripts/snapshot_synapse_checkpoints.py` |
 | Binary / three-class conditional baselines | `nnunetv2/training/nnUNetTrainer/variants/partial_label/nnUNetTrainerConditionalFiLM.py`, `nnUNetTrainerConditionalFiLMTernary.py` |
 | Class-balanced flat baseline | `nnunetv2/training/nnUNetTrainer/nnUNetTrainerRalph.py` |
-| Inference with query sweep and reconstruction | `scripts/predict_structured_conditional.py`, `inference_structured_conditional_er_dynamic.py` |
+| Inference with query sweep and reconstruction | `scripts/predict_structured_conditional.py --group_id all`, `inference_structured_conditional_er_dynamic.py` |
+| Encoder-cached inference (Section V-G) | `scripts/predict_structured_conditional.py --group_id all --cache_encoder`; tests in `nnunetv2/tests/test_cached_encoder_inference.py` |
+| Computational cost (Table VIII) | `paper/efficiency/`, `paper/figures/make_cost_table.py` |
 | Official-protocol evaluation | `scripts/cellmap_evaluation_pipeline.py`, `nnunetv2/evaluation/cellmap_challenge.py` |
 
 ## Scripts in this folder
@@ -31,6 +33,21 @@ commit `0300239`) on the 17 internal validation crops
 - the paired crop bootstrap, few-object sensitivity, and organelle count and volume errors (`robustness_stats.py`);
 - the confusion analysis for all methods (`confusion_extended.py`);
 - the uniform size-filter check (`uniform_filter.py`).
+
+`efficiency/` measures the cost table on one GPU:
+- `efficiency_metrics.py`: parameters, FLOPs per $160^3$ tile (`torch.utils.flop_counter`) and peak training memory
+  of each trainer's `train_step` on synthetic batches;
+- `benchmark_inference.py`: network and total time per validation volume for flat, class-balanced flat, per-query
+  AnchorSlot and encoder-cached AnchorSlot, with a voxel-wise check that the cached and per-query label maps agree;
+- `single_group_timing.py`: time of one query group per volume;
+- `methods.py`: the checkpoints and training environments.
+
+`figures/make_cost_table.py` writes the table from their JSON outputs.
+
+With `--cache_encoder`, each mirrored tile is encoded once and decoded for all 13 query groups, since FiLM conditions
+only the decoder. The logits are identical to the default per-query passes (tests and a GPU check on all 17
+validation volumes) and inference is about 1.5 times faster. The price is one fp32 logit accumulator per group on the
+GPU (about 35 GB for a 400^3 volume); groups are split into chunks automatically when they do not fit.
 
 `figures/fig02_method.tex` is the standalone TikZ source of Fig. 2; compile it with XeLaTeX.
 

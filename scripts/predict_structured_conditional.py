@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import itertools
 import json
+import math
 import multiprocessing
 import os
 import re
@@ -15,6 +16,7 @@ import torch
 from acvl_utils.cropping_and_padding.padding import pad_nd_image
 from batchgenerators.utilities.file_and_folder_operations import isdir, join, maybe_mkdir_p, save_json
 from torch import nn
+from torch._dynamo import OptimizedModule
 from tqdm import tqdm
 
 from nnunetv2.configuration import default_num_processes
@@ -469,6 +471,28 @@ def _get_expected_original_label_ops(
     return expected_for_group, expected_merged
 
 
+GIB = 1024 ** 3
+# Encoder-cached inference keeps one fp32 logit accumulator per query group on the device. This reserve covers the
+# network activations of one tile, cuDNN workspaces and allocator slack.
+CACHED_ENCODER_RESERVE_BYTES = 8 * GIB
+
+
+def group_chunks(num_groups: int, max_per_pass: int) -> List[List[int]]:
+    """Consecutive group ids split into chunks of at most max_per_pass."""
+    if max_per_pass < 1:
+        raise ValueError(f"max_per_pass must be >= 1, got {max_per_pass}")
+    ids = list(range(num_groups))
+    return [ids[i:i + max_per_pass] for i in range(0, num_groups, max_per_pass)]
+
+
+def groups_per_pass(free_bytes: int, num_voxels: int, patch_voxels: int, num_channels: int, num_groups: int) -> int:
+    """How many groups' fp32 accumulators fit on the device next to the image, weight map and activations."""
+    shared = 2 * num_voxels * 4  # padded image + Gaussian weight sum
+    per_group = num_channels * (num_voxels + patch_voxels) * 4  # accumulator + running tile prediction
+    fit = (int(free_bytes) - CACHED_ENCODER_RESERVE_BYTES - shared) // per_group
+    return int(max(1, min(num_groups, fit)))
+
+
 class StructuredConditionalPredictor(nnUNetPredictor):
     """
     Dedicated predictor for structured conditional trainers.
@@ -485,9 +509,14 @@ class StructuredConditionalPredictor(nnUNetPredictor):
         fixed_merge_mode: str,
         voxel_size_nm: Optional[Tuple[float, ...]] = None,
         *args,
+        cache_encoder: bool = False,
+        max_groups_per_pass: Optional[int] = None,
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)
+        self.cache_encoder = bool(cache_encoder)
+        self.max_groups_per_pass = max_groups_per_pass
+        self.last_group_chunks: List[List[int]] = []
         self.group_id = int(group_id)
         self.run_all_groups = bool(run_all_groups)
         self.output_mode = str(output_mode)
@@ -883,6 +912,180 @@ class StructuredConditionalPredictor(nnUNetPredictor):
                 f"Expected subset of: {sorted(int(i) for i in expected_labels)}"
             )
 
+    # --- encoder-cached inference over all query groups -------------------------------------------------------------
+    # The encoder does not depend on the query (FiLM acts only in the decoder), so each mirrored tile is encoded once
+    # and decoded for every group. Tiles, mirrors, Gaussian weights and the per-group accumulation order are those of
+    # the per-group path, so the logits are the same.
+
+    def _plain_network(self):
+        return self.network._orig_mod if isinstance(self.network, OptimizedModule) else self.network
+
+    def _mirror_axes_combinations(self, ndim: int) -> List[tuple]:
+        combos: List[tuple] = [()]
+        if self.use_mirroring and self.allowed_mirroring_axes is not None:
+            axes = [m + 2 for m in self.allowed_mirroring_axes]
+            assert max(axes) <= ndim - 1, "mirror_axes does not match the input dimensionality"
+            combos += [c for i in range(len(axes)) for c in itertools.combinations(axes, i + 1)]
+        return combos
+
+    def _internal_maybe_mirror_and_predict_groups(self, x: torch.Tensor, groups: Sequence[int]) -> List[torch.Tensor]:
+        """Mirror-averaged logits of one tile for several groups; one encoder pass per mirror."""
+        net = self._plain_network()
+        if not (hasattr(net, "encode") and hasattr(net, "decode_from_skips")):
+            raise RuntimeError("--cache_encoder needs a network with encode() and decode_from_skips()")
+        combos = self._mirror_axes_combinations(x.ndim)
+        group_ids = [torch.full((x.shape[0],), int(g), dtype=torch.long, device=x.device) for g in groups]
+        predictions: List[Optional[torch.Tensor]] = [None] * len(groups)
+        for axes in combos:
+            skips = net.encode(torch.flip(x, axes) if axes else x)
+            for i, gid in enumerate(group_ids):
+                out = net.decode_from_skips(skips, gid)
+                if isinstance(out, (list, tuple)):
+                    out = out[0]
+                out = out.float()
+                if axes:
+                    out = torch.flip(out, axes)
+                if predictions[i] is None:
+                    predictions[i] = out
+                else:
+                    predictions[i] += out
+            del skips
+        if len(combos) > 1:
+            for p in predictions:
+                p /= float(len(combos))
+        for g, p in zip(groups, predictions):
+            if not torch.all(torch.isfinite(p)):
+                raise RuntimeError(f"Conditioned network forward produced non-finite logits (group {g}).")
+        return predictions
+
+    def _internal_predict_sliding_window_groups(self, data: torch.Tensor, slicers, groups: Sequence[int],
+                                                do_on_device: bool) -> List[torch.Tensor]:
+        results_device = self.device if do_on_device else torch.device("cpu")
+        empty_cache(self.device)
+        data = data.to(results_device)
+        if self.use_gaussian:
+            gaussian = compute_gaussian(tuple(self.configuration_manager.patch_size), sigma_scale=1.0 / 8.0,
+                                        value_scaling_factor=10, device=results_device).to(dtype=torch.float32)
+        else:
+            gaussian = 1.0
+        n_predictions = torch.zeros(data.shape[1:], dtype=torch.float32, device=results_device)
+        accumulators: List[Optional[torch.Tensor]] = [None] * len(groups)
+        for sl in tqdm(slicers, disable=not self.allow_tqdm):
+            workon = data[sl][None].to(self.device)
+            for i, prediction in enumerate(self._internal_maybe_mirror_and_predict_groups(workon, groups)):
+                prediction = prediction[0].to(device=results_device, dtype=torch.float32)
+                if self.use_gaussian:
+                    prediction *= gaussian
+                if accumulators[i] is None:
+                    accumulators[i] = torch.zeros((int(prediction.shape[0]), *data.shape[1:]), dtype=torch.float32,
+                                                  device=results_device)
+                accumulators[i][sl] += prediction
+            n_predictions[sl[1:]] += gaussian
+        if any(a is None for a in accumulators):
+            raise RuntimeError("No prediction tiles were generated; check input shape and patch size.")
+        n_predictions = torch.clamp(n_predictions, min=torch.finfo(n_predictions.dtype).eps)
+        for g, acc in zip(groups, accumulators):
+            acc /= n_predictions
+            if not torch.all(torch.isfinite(acc)):
+                raise RuntimeError(f"Non-finite logits after fp32 accumulation (group {g}).")
+        return accumulators
+
+    def _initial_groups_per_pass(self, data: torch.Tensor) -> int:
+        num_groups = int(self.num_dynamic_groups)
+        if self.max_groups_per_pass is not None:
+            return int(max(1, min(num_groups, self.max_groups_per_pass)))
+        if self.device.type != "cuda" or not self.perform_everything_on_device:
+            return num_groups
+        free_bytes, _ = torch.cuda.mem_get_info(self.device)
+        num_channels = int(self._plain_network().decoder.seg_layers[-1].out_channels)
+        return groups_per_pass(free_bytes, int(math.prod(data.shape[1:])),
+                               int(math.prod(self.configuration_manager.patch_size)), num_channels, num_groups)
+
+    def predict_sliding_window_all_groups(self, input_image: torch.Tensor,
+                                          use_amp: bool = True) -> Dict[int, torch.Tensor]:
+        """Logits of every group for one preprocessed image [C, X, Y, Z], returned on the CPU.
+
+        On a failure other than out-of-memory (e.g. non-finite AMP logits) this retries like
+        predict_sliding_window_return_logits: first in full precision, then without mirroring.
+        """
+        try:
+            return self._predict_sliding_window_all_groups(input_image, use_amp)
+        except RuntimeError as e:
+            if use_amp and self.device.type == "cuda":
+                print(f"AMP inference failed ({e}). Retrying in full precision.")
+                empty_cache(self.device)
+                return self.predict_sliding_window_all_groups(input_image, use_amp=False)
+            if self.use_mirroring:
+                print(f"Mirrored inference failed ({e}). Retrying without TTA.")
+                empty_cache(self.device)
+                self.use_mirroring = False
+                try:
+                    return self.predict_sliding_window_all_groups(input_image, use_amp=False)
+                finally:
+                    self.use_mirroring = True
+            raise
+
+    def _predict_sliding_window_all_groups(self, input_image: torch.Tensor, use_amp: bool) -> Dict[int, torch.Tensor]:
+        assert isinstance(input_image, torch.Tensor) and input_image.ndim == 4
+        with torch.no_grad():
+            self.network = self.network.to(self.device)
+            self.network.eval()
+            empty_cache(self.device)
+            amp_context = torch.autocast(self.device.type, enabled=use_amp) if self.device.type == "cuda" \
+                else dummy_context()
+            with amp_context:
+                image, revert_border = self._maybe_apply_border_mirror_padding(input_image)
+                data, revert_padding = self._pad_for_sliding_window(image)
+                slicers = self._internal_get_sliding_window_slicers(data.shape[1:])
+                on_device = bool(self.perform_everything_on_device and self.device.type == "cuda")
+                k = self._initial_groups_per_pass(data)
+                self.last_group_chunks = []
+                results: Dict[int, torch.Tensor] = {}
+                remaining = list(range(int(self.num_dynamic_groups)))
+                while remaining:
+                    chunk = remaining[:k]
+                    try:
+                        logits = self._internal_predict_sliding_window_groups(data, slicers, chunk, on_device)
+                    except torch.cuda.OutOfMemoryError:
+                        empty_cache(self.device)
+                        if k > 1:
+                            k = max(1, k // 2)
+                            print(f"[StructuredConditionalPredict] out of memory; retrying with {k} groups per pass")
+                            continue
+                        print("[StructuredConditionalPredict] out of memory with one group; accumulating on the CPU")
+                        logits = self._internal_predict_sliding_window_groups(data, slicers, chunk, False)
+                    for g, lg in zip(chunk, logits):
+                        lg = lg[(slice(None), *revert_padding[1:])]
+                        if revert_border is not None:
+                            lg = lg[(slice(None), *revert_border[1:])]
+                        results[g] = lg.to("cpu")
+                    del logits
+                    self.last_group_chunks.append(list(chunk))
+                    remaining = remaining[len(chunk):]
+            empty_cache(self.device)
+        return results
+
+    def predict_logits_all_groups_from_preprocessed_data(self, data: torch.Tensor) -> Dict[int, torch.Tensor]:
+        """All-group counterpart of predict_logits_from_preprocessed_data (fold ensembling included)."""
+        n_threads = torch.get_num_threads()
+        torch.set_num_threads(default_num_processes if default_num_processes < n_threads else n_threads)
+        try:
+            summed: Optional[Dict[int, torch.Tensor]] = None
+            for params in self.list_of_parameters:
+                self._plain_network().load_state_dict(params)
+                logits = self.predict_sliding_window_all_groups(data)
+                if summed is None:
+                    summed = logits
+                else:
+                    for g in summed:
+                        summed[g] += logits[g]
+            if len(self.list_of_parameters) > 1:
+                for g in summed:
+                    summed[g] /= len(self.list_of_parameters)
+            return summed
+        finally:
+            torch.set_num_threads(n_threads)
+
     def predict_from_data_iterator(
         self,
         data_iterator,
@@ -946,9 +1149,15 @@ class StructuredConditionalPredictor(nnUNetPredictor):
                 parent_dir = os.path.dirname(ofile) if ofile is not None else None
                 case_id = os.path.basename(ofile) if ofile is not None else None
 
+                cached_logits = (
+                    self.predict_logits_all_groups_from_preprocessed_data(data) if self.cache_encoder else None
+                )
                 for group_id in range(self.num_dynamic_groups):
                     self.group_id = int(group_id)
-                    logits = self.predict_logits_from_preprocessed_data(data).cpu()
+                    if cached_logits is not None:
+                        logits = cached_logits.pop(int(group_id))
+                    else:
+                        logits = self.predict_logits_from_preprocessed_data(data).cpu()
                     logits_by_group[int(group_id)] = logits.unsqueeze(0)
 
                     seg_group = self._decode_one_group_logits_to_output_labels(
@@ -1205,6 +1414,22 @@ def _build_arg_parser() -> argparse.ArgumentParser:
             "'mean': average confidence; 'max': maximum confidence."
         ),
     )
+    parser.add_argument(
+        "--cache_encoder",
+        action="store_true",
+        default=False,
+        help=(
+            "With --group_id all: encode each mirrored tile once and decode it for every group. Same logits as the "
+            "default per-group passes, about 1.5x faster, but keeps one logit accumulator per group on the GPU."
+        ),
+    )
+    parser.add_argument(
+        "--max_groups_per_pass",
+        type=int,
+        required=False,
+        default=None,
+        help="With --cache_encoder: cap on groups decoded per sliding-window pass (default: fit free GPU memory).",
+    )
     return parser
 
 
@@ -1281,7 +1506,11 @@ def main() -> None:
         allow_tqdm=not args.disable_progress_bar,
         inference_padding_mode=str(args.inference_padding_mode),
         inference_border_mirror_pad_size=border_pad_size,
+        cache_encoder=bool(args.cache_encoder),
+        max_groups_per_pass=args.max_groups_per_pass,
     )
+    if args.cache_encoder and not run_all_groups:
+        print("[StructuredConditionalPredict] --cache_encoder has no effect with a single --group_id")
 
     predictor.initialize_from_trained_model_folder(
         model_folder,
@@ -1334,6 +1563,8 @@ def main() -> None:
             "run_all_groups": bool(run_all_groups),
             "output_mode": str(args.output_mode),
             "fixed_merge_mode": str(args.fixed_merge_mode),
+            "cache_encoder": bool(args.cache_encoder),
+            "max_groups_per_pass": args.max_groups_per_pass,
             "inference_padding_mode": str(args.inference_padding_mode),
             "inference_border_mirror_pad_size": str(args.inference_border_mirror_pad_size),
             "voxel_size_nm": list(voxel_size_nm) if voxel_size_nm is not None else None,
@@ -1353,6 +1584,7 @@ def main() -> None:
         f" num_dynamic_groups={int(predictor.num_dynamic_groups)}"
         f" output_mode={args.output_mode}"
         f" fixed_merge_mode={args.fixed_merge_mode}"
+        f" cache_encoder={bool(args.cache_encoder)}"
         f" inference_padding_mode={args.inference_padding_mode}"
         f" inference_border_mirror_pad_size={args.inference_border_mirror_pad_size}"
         f" voxel_size_nm={voxel_size_nm}"
