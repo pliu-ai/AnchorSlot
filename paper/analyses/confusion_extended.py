@@ -10,6 +10,7 @@ method's predicted-background fraction, so the 'to background' column can be rea
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -21,7 +22,8 @@ HERE = Path(__file__).resolve().parent
 RUNS = Path("/projects/weilab/liupeng/runs/Anchorslot")
 REPO = Path("/projects/weilab/liupeng/code/projects/AnchorSlot")
 LOCK = RUNS / "evaluation_protocol/high_4nm/truth_lock.json"
-LABELS_TS = Path("/projects/weilab/liupeng/data/nnUNet/nnUNet_raw/Dataset203_Dataset101_CellMap_model_high_res_hdrfix/labelsTs")
+# Validation label maps (labelsTs *.nii.gz), used for the ground-truth background fraction.
+LABELS_TS = Path(os.environ.get("CELLMAP_LABELS_TS", ""))
 sys.path.insert(0, str(REPO))
 from nnunetv2.evaluation.cellmap_challenge import (  # noqa: E402
     ATOMIC_TO_LABEL_ID, _load_hard_segmentation, entries_by_crop, index_predictions, read_manifest)
@@ -38,6 +40,8 @@ SOURCES = {
 
 
 def main() -> None:
+    if not os.environ.get("CELLMAP_LABELS_TS") or not LABELS_TS.is_dir():
+        raise SystemExit("set CELLMAP_LABELS_TS to the folder with the validation label maps (labelsTs)")
     lock = json.loads(LOCK.read_text())
     methods = {k: json.loads((v / "evaluation_provenance.json").read_text())["predictions"] for k, v in SOURCES.items()}
     preds = {k: index_predictions(v) for k, v in methods.items()}

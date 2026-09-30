@@ -6,13 +6,14 @@ Outputs (figures/):
 
 Fig. 5 rows: the crop with the most annotated labels (crop219), the median-margin crop (crop126), and
 the crop with the largest class-balanced advantage (crop15); central slice along the first array axis.
-Fig. 1 uses a window centred on the largest mitochondrion in crop219's central slice. EM comes from the header-corrected Dataset203 images.
+Fig. 1 uses a window centred on the largest mitochondrion in crop219's central slice. EM comes from the validation images in CELLMAP_IMAGES_TS (imagesTs).
 Run with the csc environment on a compute node.
 """
 
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 import matplotlib
@@ -31,7 +32,7 @@ from make_result_figures import PREDICTIONS  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 FIG = ROOT / "figures"
 DATA = Path("/projects/weilab/liupeng/data/nnUNet/nnUNet_raw")
-IMAGES = DATA / "Dataset203_Dataset101_CellMap_model_high_res_hdrfix/imagesTs"
+IMAGES = Path(os.environ.get("CELLMAP_IMAGES_TS", ""))  # validation EM images (imagesTs *_0000.nii.gz)
 LABEL_IDS = {k: v for k, v in json.loads((DATA / "Dataset200_Dataset101_CellMap_model_high_res/dataset.json").read_text())["labels"].items() if k != "background"}
 ANCHORS = ("ecs", "pm", "cyto", "nucpl")
 QUERY = ("mito_mem", "mito_lum", "mito_ribo")
@@ -234,6 +235,8 @@ def target_coding_figure(store):
 
 
 def main():
+    if not os.environ.get("CELLMAP_IMAGES_TS") or not IMAGES.is_dir():
+        raise SystemExit("set CELLMAP_IMAGES_TS to the folder with the validation EM images (imagesTs)")
     store = im.truth_store()
     record = {"image_source": str(IMAGES),
               "selection": ("rows: most annotated labels (crop219, also margin rank 1), median AnchorSlot-minus-CB "

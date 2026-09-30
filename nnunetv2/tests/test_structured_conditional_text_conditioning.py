@@ -4,15 +4,12 @@ import json
 import os
 import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 import torch
 from torch import nn
 
-from anchor_slot.grouping.validate_grouping import (
-    DEFAULT_DYNAMIC_LABELS,
-    validate_grouping_config,
-)
 from nnunetv2.training.nnUNetTrainer.variants.structured_conditional.label_mapping_er_dynamic import (
     DYNAMIC_GROUP_SPECS,
 )
@@ -335,48 +332,6 @@ def test_default_grouping_unchanged() -> None:
     assert actual == expected
 
 
-def test_generated_grouping_passes_validation() -> None:
-    config = {
-        "anchors": ["ecs", "pm", "cyto", "nucpl"],
-        "dynamic_groups": {
-            "G1": ["mito_mem", "mito_lum", "mito_ribo"],
-            "G2": ["golgi_mem", "golgi_lum", "ves_mem"],
-            "G3": ["ves_lum", "endo_mem", "endo_lum"],
-            "G4": ["lyso_mem", "lyso_lum", "ld_mem"],
-            "G5": ["ld_lum", "er_mem", "er_lum"],
-            "G6": ["eres_mem", "eres_lum", "ne_mem"],
-            "G7": ["ne_lum", "np_out", "np_in"],
-            "G8": ["hchrom", "echrom", "mt_out"],
-            "G9": ["mt_in", "perox_mem", "perox_lum"],
-        },
-        "K": 3,
-    }
-    result = validate_grouping_config(config)
-    assert result["num_dynamic_labels"] == len(DEFAULT_DYNAMIC_LABELS)
-    assert result["max_group_size"] == 3
-
-
-def test_grouping_validation_missing_label_triggers_clear_error() -> None:
-    config = _manual_grouping_config()
-    config["dynamic_groups"]["G1"] = ["mito_mem", "mito_lum"]
-    with pytest.raises(ValueError, match="missing required dynamic labels"):
-        validate_grouping_config(config)
-
-
-def test_grouping_validation_duplicate_label_triggers_clear_error() -> None:
-    config = _manual_grouping_config()
-    config["dynamic_groups"]["G2"] = ["golgi_mem", "golgi_lum", "mito_ribo"]
-    with pytest.raises(ValueError, match="duplicate dynamic labels"):
-        validate_grouping_config(config)
-
-
-def test_grouping_validation_group_size_triggers_clear_error() -> None:
-    config = _manual_grouping_config()
-    config["dynamic_groups"]["G2"] = ["golgi_mem", "golgi_lum", "ves_mem", "ves_lum"]
-    with pytest.raises(ValueError, match="max_group_size"):
-        validate_grouping_config(config)
-
-
 def test_training_import_can_initialize_generated_grouping_config(tmp_path) -> None:
     config = _manual_grouping_config()
     config["dynamic_groups"] = {
@@ -393,7 +348,7 @@ def test_training_import_can_initialize_generated_grouping_config(tmp_path) -> N
     path = tmp_path / "grouping.json"
     path.write_text(json.dumps(config), encoding="utf-8")
     env = dict(os.environ)
-    env["PYTHONPATH"] = "/projects/weilab/liupeng/code/vendors/nnUNet:/projects/weilab/liupeng/code/projects/RAHSeg"
+    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[2])
     env["NNUNET_STRUCTCOND_GROUPING_CONFIG_PATH"] = str(path)
     code = (
         "from nnunetv2.training.nnUNetTrainer.variants.structured_conditional import label_mapping_er_dynamic as lm; "

@@ -52,5 +52,6 @@ GPU (about 35 GB for a 400^3 volume); groups are split into chunks automatically
 `figures/fig02_method.tex` is the standalone TikZ source of Fig. 2; compile it with XeLaTeX.
 
 These scripts were written for our cluster layout. Paths to predictions, the locked ground-truth store, and the
-evaluator checkout are absolute (`/projects/weilab/...`) and must be adapted. The figure scripts also expect to live
+evaluator checkout are absolute (`/projects/weilab/...`) and must be adapted. `analyses/confusion_extended.py` and `figures/make_label_figures.py` read the
+validation label maps and EM images from the environment variables `CELLMAP_LABELS_TS` and `CELLMAP_IMAGES_TS`. The figure scripts also expect to live
 in `scripts/` of the manuscript folder, which contains `figures/` and `tables/`.
