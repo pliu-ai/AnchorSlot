@@ -1,7 +1,7 @@
 # Paper scripts: AnchorSlot (TMI submission)
 
 Scripts behind the figures, tables, and robustness analyses of
-"AnchorSlot: Structured Target Coding for Pan-Organelle Segmentation in Volumetric EM".
+"AnchorSlot: Role-Structured Supervision for Pan-Organelle Segmentation in Volume EM".
 The model code is in `nnunetv2/` of this repository; this folder only reproduces the paper's figures and analyses
 from trained-model predictions.
 
