@@ -24,6 +24,28 @@ from .label_mapping_er_dynamic import (
 SUPPRESSION_MODES = ("pooled", "region_balanced")
 
 
+def mask_inactive_conditional_logits(
+    logits: torch.Tensor, active_conditional_slots: torch.Tensor
+) -> torch.Tensor:
+    """Remove unused slots from the distribution shared by loss and inference.
+
+    Keep background, fixed anchors and ``other`` in the competition. A finite
+    FP32 sentinel also keeps masked reductions and empty losses well defined.
+    """
+    if logits.ndim < 3 or logits.shape[1] != NUM_OUTPUT_CHANNELS:
+        raise ValueError(f"Expected logits [B, {NUM_OUTPUT_CHANNELS}, ...]")
+    if not logits.is_floating_point():
+        raise TypeError("logits must be floating point")
+    active = torch.as_tensor(active_conditional_slots, device=logits.device, dtype=torch.bool)
+    if active.shape != (logits.shape[0], 3):
+        raise ValueError("active_conditional_slots must have shape [B, 3]")
+    channels = torch.ones((logits.shape[0], NUM_OUTPUT_CHANNELS), device=logits.device, dtype=torch.bool)
+    channels[:, COND_SLOT_1_CHANNEL : COND_SLOT_3_CHANNEL + 1] = active
+    expanded = channels.view(*channels.shape, *([1] * (logits.ndim - 2)))
+    stable_logits = logits.float() if logits.dtype in (torch.float16, torch.bfloat16) else logits
+    return stable_logits.masked_fill(~expanded, torch.finfo(stable_logits.dtype).min)
+
+
 @dataclass
 class StructuredLossConfig:
     """Configuration for structured conditional loss components."""
@@ -80,17 +102,8 @@ class StructuredConditionalLoss(nn.Module):
         return class_mask.view(*view_shape)
 
     def _mask_unused_cond3_channel_for_ce(self, logits: torch.Tensor, active_conditional_slots: torch.Tensor) -> torch.Tensor:
-        """
-        For 2-slot groups, channel 9 (cond_slot_3) is removed from CE competition by
-        forcing very negative logits for that sample.
-        """
-        inactive_cond3 = ~active_conditional_slots[:, 2]
-        if not torch.any(inactive_cond3):
-            return logits
-
-        masked_logits = logits.clone()
-        masked_logits[inactive_cond3, COND_SLOT_3_CHANNEL] = -1e4
-        return masked_logits
+        """Compatibility hook for DDW subclasses; mask every inactive slot."""
+        return mask_inactive_conditional_logits(logits, active_conditional_slots)
 
     @staticmethod
     def _build_foreground_class_mask(active_conditional_slots: torch.Tensor, device: torch.device) -> torch.Tensor:
@@ -121,7 +134,7 @@ class StructuredConditionalLoss(nn.Module):
 
     @staticmethod
     def _safe_zero(logits: torch.Tensor) -> torch.Tensor:
-        return logits.reshape(-1)[0] * 0.0
+        return logits.reshape(-1)[:0].float().sum()
 
     def _masked_ce(
         self,
@@ -231,6 +244,9 @@ class StructuredConditionalLoss(nn.Module):
         valid_mask: torch.Tensor,
         class_mask: torch.Tensor,
     ) -> torch.Tensor:
+        # ``forward`` and ``_conditional_focus_loss`` supply logits with all
+        # inactive slots removed. class_mask selects Dice entries only; it
+        # must not remove the competing background/anchor/other classes.
         probs = torch.softmax(logits, dim=1)
         target_labels = target[:, 0].long().clamp(min=0, max=NUM_OUTPUT_CHANNELS - 1)
         target_onehot = F.one_hot(target_labels, num_classes=NUM_OUTPUT_CHANNELS)
@@ -286,6 +302,7 @@ class StructuredConditionalLoss(nn.Module):
         valid_mask: torch.Tensor,
         active_conditional_slots: torch.Tensor,
     ) -> torch.Tensor:
+        logits = mask_inactive_conditional_logits(logits, active_conditional_slots)
         cond_class_mask = self._build_conditional_class_mask(active_conditional_slots, logits.device)
         if not torch.any(cond_class_mask):
             return self._safe_zero(logits)
@@ -301,6 +318,7 @@ class StructuredConditionalLoss(nn.Module):
         """
         Suppress active conditional slots in non-conditional target regions.
         """
+        logits = mask_inactive_conditional_logits(logits, active_conditional_slots)
         probs = torch.softmax(logits, dim=1)
         cond_probs = probs[:, COND_SLOT_1_CHANNEL : COND_SLOT_3_CHANNEL + 1]
 
@@ -356,6 +374,9 @@ class StructuredConditionalLoss(nn.Module):
         active_conditional_slots: torch.Tensor,
         return_components: bool = False,
     ):
+        # All objectives must see the same distribution, including singleton
+        # groups where both slot 2 and slot 3 are unused.
+        logits = mask_inactive_conditional_logits(logits, active_conditional_slots)
         ce_loss = self._masked_ce(logits, target, valid_mask, active_conditional_slots)
 
         foreground_class_mask = self._build_foreground_class_mask(active_conditional_slots, logits.device)

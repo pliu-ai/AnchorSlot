@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 from pathlib import Path
 from typing import Any, List, Mapping, Tuple, Union
 
@@ -525,3 +526,31 @@ class nnUNetTrainerRalph(nnUNetTrainer):
     
     def perform_actual_validation(self, *args, **kwargs):
             pass
+
+    # ------------------------------------------------------------------
+    # Periodic snapshots (flat_f0_snapshots_20261021; off unless both env vars are set)
+    # ------------------------------------------------------------------
+
+    def on_epoch_end(self):
+        """Keep a copy of checkpoint_latest as checkpoint_ep{N}.pth, N = number of completed epochs, for
+        N >= RALPH_SNAPSHOT_START and N % RALPH_SNAPSHOT_EVERY == 0 (N < num_epochs; the last epoch is
+        checkpoint_final). The copy is byte-identical to checkpoint_latest, so a snapshot can be loaded or
+        resumed like it. RALPH_SNAPSHOT_EVERY must be a multiple of save_every."""
+        completed = self.current_epoch + 1
+        super().on_epoch_end()
+        every = int(os.environ.get("RALPH_SNAPSHOT_EVERY", "0") or 0)
+        start = int(os.environ.get("RALPH_SNAPSHOT_START", "0") or 0)
+        if every <= 0:
+            return
+        if every % self.save_every != 0:
+            raise RuntimeError(f"RALPH_SNAPSHOT_EVERY={every} is not a multiple of save_every={self.save_every}")
+        if self.local_rank != 0 or self.disable_checkpointing:
+            return
+        if completed < start or completed % every != 0 or completed >= self.num_epochs:
+            return
+        src = os.path.join(self.output_folder, "checkpoint_latest.pth")
+        dst = os.path.join(self.output_folder, f"checkpoint_ep{completed:04d}.pth")
+        tmp = dst + ".tmp"
+        shutil.copyfile(src, tmp)
+        os.replace(tmp, dst)
+        self.print_to_log_file(f"nnUNetTrainerRalph: snapshot {os.path.basename(dst)}")

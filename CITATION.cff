@@ -1,19 +1,28 @@
 cff-version: 1.2.0
-message: "If you use this software, cite the AnchorSlot paper and nnU-Net."
-title: "AnchorSlot: Hierarchical Parallel Anchor Slots for Structured Connectomics Segmentation"
+message: "If you use this software, please cite the AnchorSlot paper and nnU-Net."
+title: "AnchorSlot: Role-Structured Supervision for Pan-Organelle Segmentation in Volume EM"
 type: software
 authors:
   - family-names: Liu
     given-names: Peng
-version: 0.1.0
-date-released: 2026-08-02
+    affiliation: Boston College
+  - family-names: Yang
+    given-names: Jiancheng
+    affiliation: Harvard University
+  - family-names: Wei
+    given-names: Donglai
+    affiliation: Boston College
+version: 1.0.0
+date-released: 2026-11-26
 license: Apache-2.0
-repository-code: "https://github.com/luckieucas/AnchorSlot"
+repository-code: "https://github.com/pliu-ai/AnchorSlot"
 keywords:
   - connectomics
-  - segmentation
+  - volume electron microscopy
+  - pan-organelle segmentation
+  - CellMap
   - nnU-Net
-  - hierarchical learning
+  - role-structured supervision
   - anchor slots
 references:
   - type: article

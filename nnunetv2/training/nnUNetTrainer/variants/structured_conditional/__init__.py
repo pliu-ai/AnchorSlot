@@ -13,6 +13,12 @@ from .trainer_resolution_adaptive_hierarchical_anchorslot import (
     nnUNetTrainerResolutionAdaptiveHierarchicalParallelAnchorSlot,
     nnUNetTrainerResolutionAdaptiveHierarchicalAnchorSlot,
 )
+from .trainer_structured_conditional_er_dynamic_group_head import (
+    nnUNetTrainerStructuredConditionalERDynamicGroupHead,
+)
+from .trainer_structured_conditional_er_dynamic_group_head_nqbg import (
+    nnUNetTrainerStructuredConditionalERDynamicGroupHeadNQBG,
+)
 from .trainer_structured_conditional_no_slot3_er_in_cond_slot import (
     nnUNetTrainerStructuredConditionalNoSlot3ERInCondSlot,
 )
@@ -71,6 +77,8 @@ __all__ = [
     "nnUNetTrainerHierarchicalParallelAnchorSlot",
     "nnUNetTrainerResolutionAdaptiveHierarchicalAnchorSlot",
     "nnUNetTrainerResolutionAdaptiveHierarchicalParallelAnchorSlot",
+    "nnUNetTrainerStructuredConditionalERDynamicGroupHead",
+    "nnUNetTrainerStructuredConditionalERDynamicGroupHeadNQBG",
     "nnUNetTrainerStructuredConditionalNoSlot3ERInCondSlot",
     "nnUNetTrainerStructuredConditionalNoSlot3ERDynamic",
     "nnUNetTrainerStructuredConditionalERDynamic",

@@ -1,10 +1,13 @@
 % Method overview (Fig. 2), vector version. Compile standalone to figures/fig02_method.pdf.
-% Role colours match figures/fig_target_coding.pdf (scripts/make_label_figures.py, ROLE palette).
+% Role colours match figures/fig_cellmap_roles.pdf (ROLE palette). The three thumbnails in (a) are
+% figures/fig02_em.png and figures/fig02_role_{mito,golgi}.png: one 640-nm window of crop219 and its
+% role-coded targets under two queries.
 \documentclass[tikz,border=2pt]{standalone}
 \usepackage{fontspec}
 \setmainfont{texgyreheros}[Extension=.otf, UprightFont=*-regular, BoldFont=*-bold,
   ItalicFont=*-italic, BoldItalicFont=*-bolditalic, Scale=0.95]
 \usepackage{sansmath}
+\usepackage{graphicx}
 \usetikzlibrary{arrows.meta,calc,decorations.pathreplacing,positioning}
 \definecolor{bg}{HTML}{D9D9D9}
 \definecolor{ecs}{HTML}{C6DBEF}
@@ -14,12 +17,17 @@
 \definecolor{slotA}{HTML}{D95F02}
 \definecolor{slotB}{HTML}{FDAE6B}
 \definecolor{slotC}{HTML}{7F2704}
+\definecolor{slotD}{HTML}{B8860B}
+\definecolor{slotE}{HTML}{F2D16B}
+\definecolor{slotF}{HTML}{B2182B}
+\definecolor{slotG}{HTML}{F4A582}
 \definecolor{other}{HTML}{8E6BBF}
 \definecolor{ink}{HTML}{222222}
 \definecolor{soft}{HTML}{F3F3F1}
 \definecolor{line}{HTML}{8A8A8A}
+\definecolor{grp}{HTML}{1B9E77}
 \tikzset{
-  ch/.style={draw=white, line width=0.6pt, minimum width=0.92cm, minimum height=0.66cm, inner sep=0pt,
+  ch/.style={draw=white, line width=0.6pt, minimum width=0.80cm, minimum height=0.66cm, inner sep=0pt,
              font=\scriptsize, align=center, text=ink},
   dark/.style={text=white},
   box/.style={draw=line, fill=soft, rounded corners=2pt, text width=5.5cm, align=center,
@@ -28,43 +36,88 @@
   brace/.style={decorate, decoration={brace, amplitude=4pt}, line width=0.5pt, color=ink},
   ttl/.style={font=\footnotesize\bfseries, anchor=west, text=ink},
   note/.style={font=\scriptsize, text=ink, align=center},
+  cell/.style={draw=white, line width=0.4pt, minimum width=0.27cm, minimum height=0.24cm, inner sep=0pt},
 }
-% #1 y, #2 query label, #3-#5 slot texts, #6 style of slot 3, #7 node-name suffix
-\newcommand{\chrow}[7]{%
-  \node[font=\scriptsize, align=right, anchor=east, text=ink] at (2.15,#1) {#2};
-  \node[ch, fill=bg]          (bg#7) at (2.76,#1) {BG};
-  \node[ch, fill=ecs]         (a1#7) at (3.94,#1) {ecs};
-  \node[ch, fill=pm, dark]    (a2#7) at (4.92,#1) {pm};
-  \node[ch, fill=cyto]        (a3#7) at (5.90,#1) {cyto};
-  \node[ch, fill=nucpl]       (a4#7) at (6.88,#1) {nucpl};
-  \node[ch, fill=slotA, dark] (s1#7) at (8.06,#1) {#3};
-  \node[ch, fill=slotB]       (s2#7) at (9.04,#1) {#4};
-  \node[ch, #6]               (s3#7) at (10.02,#1) {#5};
-  \node[ch, fill=other, dark] (o#7)  at (11.20,#1) {other\\FG};
+% #1 y, #2-#4 slot texts, #5 style of slot 3, #6 node-name suffix
+\newcommand{\chrow}[6]{%
+  \node[ch, fill=bg]          (bg#6) at (3.95,#1) {BG};
+  \node[ch, fill=ecs]         (a1#6) at (4.93,#1) {ecs};
+  \node[ch, fill=pm, dark]    (a2#6) at (5.78,#1) {pm};
+  \node[ch, fill=cyto]        (a3#6) at (6.63,#1) {cyto};
+  \node[ch, fill=nucpl]       (a4#6) at (7.48,#1) {nucpl};
+  \node[ch, fill=slotA, dark] (s1#6) at (8.46,#1) {#2};
+  \node[ch, fill=slotB]       (s2#6) at (9.31,#1) {#3};
+  \node[ch, #5]               (s3#6) at (10.16,#1) {#4};
+  \node[ch, fill=other, dark] (o#6)  at (11.14,#1) {other\\FG};
+}
+% One query's output strip in (b): #1 y, #2 row label, #3-#5 slot fills (#5 may be a dashed empty cell)
+\newcommand{\qrow}[5]{%
+  \node[font=\scriptsize, anchor=east, text=ink] at (13.08,#1) {#2};
+  \node[cell, fill=bg] at (13.335,#1) {};
+  \foreach \k/\c in {0/ecs,1/pm,2/cyto,3/nucpl} { \node[cell, fill=\c] at (13.685+0.27*\k,#1) {}; }
+  \node[cell, fill=#3] at (14.845,#1) {};
+  \node[cell, fill=#4] at (15.115,#1) {};
+  \node[cell, #5] at (15.385,#1) {};
+  \node[cell, fill=other] at (15.735,#1) {};
 }
 \begin{document}
 \hyphenpenalty=10000\exhyphenpenalty=10000
 \begin{sansmath}
 \begin{tikzpicture}[x=1cm, y=1cm]
-% ---------------- (a) structured target code ----------------
-\node[ttl] at (0,1.62) {(a) Structured target code};
-\chrow{0}{Query $g$:\\mitochondria}{mito\\mem}{mito\\lum}{mito\\ribo}{fill=slotC, dark}{A}
-\chrow{-0.9}{Query $g$:\\Golgi}{golgi\\mem}{golgi\\lum}{masked}{fill=white, draw=line, densely dashed, text=line}{B}
+% ---------------- (a) role-structured target code ----------------
+\node[ttl] at (0,1.62) {(a) Role-structured target code};
+\node[inner sep=0pt] (em) at (0.72,-0.64) {\includegraphics[width=1.3cm]{fig02_em.png}};
+\node[note, anchor=south] at (em.north) {EM patch};
+\node[inner sep=0pt, draw=line, line width=0.3pt] (tA) at (2.62,0.12) {\includegraphics[width=1.2cm]{fig02_role_mito.png}};
+\node[inner sep=0pt, draw=line, line width=0.3pt] (tB) at (2.62,-1.40) {\includegraphics[width=1.2cm]{fig02_role_golgi.png}};
+\node[note, anchor=south] at ($(tA.north)+(0,0.0)$) {query:\\mitochondria};
+\node[note, anchor=north] at ($(tB.south)+(0,-0.03)$) {query: Golgi};
+\draw[arr] ($(em.east)+(0,0.3)$) -- ($(tA.west)+(0,-0.15)$);
+\draw[arr] ($(em.east)+(0,-0.3)$) -- ($(tB.west)+(0,0.15)$);
+\chrow{0.12}{mito\\mem}{mito\\lum}{mito\\ribo}{fill=slotC, dark}{A}
+\chrow{-1.40}{golgi\\mem}{golgi\\lum}{}{fill=white, draw=line, densely dashed}{B}
 \draw[brace] ($(bgA.north west)+(0,0.08)$) -- ($(bgA.north east)+(0,0.08)$) node[midway, above=4pt, note] {Back-\\ground};
-\draw[brace] ($(a1A.north west)+(0,0.08)$) -- ($(a4A.north east)+(0,0.08)$) node[midway, above=4pt, note] {Anchors: fixed under\\every query};
-\draw[brace] ($(s1A.north west)+(0,0.08)$) -- ($(s3A.north east)+(0,0.08)$) node[midway, above=4pt, note] {Dynamic slots:\\query-dependent};
+\draw[brace] ($(a1A.north west)+(0,0.08)$) -- ($(a4A.north east)+(0,0.08)$) node[midway, above=4pt, note] {Anchors: same under\\every query};
+\draw[brace] ($(s1A.north west)+(0,0.08)$) -- ($(s3A.north east)+(0,0.08)$) node[midway, above=4pt, note] {Dynamic slots:\\set by the query};
 \draw[brace] ($(oA.north west)+(0,0.08)$) -- ($(oA.north east)+(0,0.08)$) node[midway, above=4pt, note] {Non-query\\foreground};
-\node[note, anchor=north] at ($(s3B.south)+(0,-0.1)$) {inactive slot:\\masked in CE};
-\node[note, anchor=north] at ($(a2B.south)!0.5!(a3B.south)+(0,-0.1)$) {9 channels = 1 + 4 + $K$ + 1 ($K$ = 3)};
+\node[note, anchor=north] at ($(s3B.south)+(0,-0.08)$) {inactive slot:\\masked};
+\node[note, anchor=north] at ($(a2B.south)!0.5!(a3B.south)+(0,-0.08)$) {1 + $|\mathcal{A}|$ + $K$ + 1 channels};
 % ---------------- (b) reconstruction ----------------
-\draw[line, line width=0.4pt] (12.05,1.8) -- (12.05,-2.05);
-\node[ttl] at (12.25,1.62) {(b) Reconstruction at inference};
-\node[box, anchor=north] (r1) at (15.15,1.3) {Run all 13 group queries (each with 8 test-time mirrors)};
-\node[box, below=0.22cm of r1] (r2) {Average \textbf{background and anchor} probabilities over the 13 runs};
-\node[box, below=0.22cm of r2] (r3) {Map each active slot to its label from its own query run; discard the non-query channel};
-\node[box, fill=white, below=0.22cm of r3] (r4) {Argmax over 32 channels $\rightarrow$ 31 labels + background};
-\draw[arr] (r1) -- (r2); \draw[arr] (r2) -- (r3); \draw[arr] (r3) -- (r4);
+\draw[line, line width=0.4pt] (11.85,1.8) -- (11.85,-2.42);
+\node[ttl] at (12.05,1.62) {(b) Reconstruction at inference};
+\begin{scope}[xshift=0.75cm]
+\qrow{1.02}{query $g_1$}{slotA}{slotB}{fill=slotC}
+\qrow{0.70}{query $g_2$}{slotD}{slotE}{fill=white, draw=line, densely dashed}
+\node[font=\scriptsize, text=ink] at (14.5,0.47) {$\cdots$};
+\qrow{0.20}{query $g_M$}{slotF}{slotG}{fill=white, draw=line, densely dashed}
+% non-query channel: discarded in base fusion, veto signal in consensus reconstruction
+\draw[line, line width=0.4pt] (15.92,0.70) -- (16.12,0.70);
+\node[note, anchor=west, align=left] at (16.12,0.70) {veto signal in\\consensus recon.};
+% shared channels are averaged; each slot returns to its own label
+\draw[arr] (13.875,0.04) -- (13.875,-1.03);
+\node[note, anchor=east, align=right] at (13.78,-0.5) {average\\over queries};
+\draw[arr] (15.0,0.04) -- (15.2,-1.03);
+\draw[arr] (15.15,0.04) -- (16.0,-1.03);
+\draw[arr] (15.3,0.04) -- (17.05,-1.03);
+\node[note, anchor=west, align=left] at (16.18,-0.22) {each slot $\rightarrow$\\its own label};
+% group head band and the reconstructed label scores
+\node[font=\scriptsize, anchor=east, text=grp] at (13.08,-1.13) {group head $\bar{Q}$};
+\fill[grp] (13.21,-1.19) rectangle (13.46,-1.07);
+\foreach \k in {0,1,2,3} { \fill[grp] (13.56+0.27*\k,-1.19) rectangle (13.81+0.27*\k,-1.07); }
+\fill[grp] (14.84,-1.19) rectangle (15.63,-1.07);
+\fill[grp] (15.74,-1.19) rectangle (16.26,-1.07);
+\fill[grp] (16.80,-1.19) rectangle (17.32,-1.07);
+\node[font=\scriptsize, anchor=east, text=ink] at (13.08,-1.42) {label scores};
+\node[cell, fill=bg] at (13.335,-1.42) {};
+\foreach \k/\c in {0/ecs,1/pm,2/cyto,3/nucpl} { \node[cell, fill=\c] at (13.685+0.27*\k,-1.42) {}; }
+\foreach \k/\c in {0/slotA,1/slotB,2/slotC} { \node[cell, fill=\c] at (14.965+0.27*\k,-1.42) {}; }
+\foreach \k/\c in {0/slotD,1/slotE} { \node[cell, fill=\c] at (15.865+0.27*\k,-1.42) {}; }
+\node[font=\scriptsize, text=ink] at (16.53,-1.42) {$\cdots$};
+\foreach \k/\c in {0/slotF,1/slotG} { \node[cell, fill=\c] at (16.925+0.27*\k,-1.42) {}; }
+\end{scope}
+\node[note] at (15.1,-1.97) {\textcolor{grp}{group head $\bar{Q}$}: between groups \quad slots $P^{(g)}$: within a group\\geometric / consensus score fusion + argmax $\rightarrow$ label map};
 % ---------------- (c) conditional training ----------------
+\begin{scope}[yshift=-0.17cm]
 \draw[line, line width=0.4pt] (0,-2.3) -- (18.2,-2.3);
 \node[ttl] at (0,-2.6) {(c) Conditional training};
 \begin{scope}[shift={(0.35,-4.75)}]
@@ -83,33 +136,38 @@
 \node[box, text width=3.3cm, minimum height=0.5cm] (q) at (5.95,-2.95) {query $g \rightarrow e_g \rightarrow$ MLP};
 \foreach \x in {5.2,5.95,6.7} { \draw[arr] (\x,-3.2) -- (\x,-3.72); }
 \node[note, anchor=west] at (7.75,-3.05) {FiLM $(\gamma_\ell,\beta_\ell)$ at every\\decoder stage};
-\node[box, text width=1.7cm] (p) at (8.85,-4.2) {$P_g$: 9-channel\\probabilities};
+\node[box, text width=2.3cm] (p) at (9.08,-4.2) {$P_g$: role channels\\(1 + $|\mathcal{A}|$ + $K$ + 1)};
 \draw[arr] (7.3,-4.2) -- (p.west);
-\node[note] at (8.85,-5.1) {one sampled query per\\patch ($p_{\mathrm{present}}$ = 0.8)};
-\draw[arr] (p.east) -- (10.35,-4.2);
+\node[box, draw=grp, text width=2.3cm] (gh) at (9.08,-5.15) {$Q^{(g)}$: group head\\(1 + $|\mathcal{A}|$ + $M$)};
+\draw[arr, color=grp] (7.3,-4.8) -- (7.55,-4.8) |- (gh.west);
+\node[note] at (4.55,-5.35) {one query per patch};
+\draw[arr] (p.east) -- (10.62,-4.2);
 % loss coverage: rows are loss terms, columns are output channels
-\begin{scope}[shift={(10.45,-3.05)}]
-  \def\cw{1.03}
+\begin{scope}[shift={(10.62,-3.22)}]
+  \def\cw{0.98}
   \def\mm{m}
   \foreach \lab/\col/\i in {BG/bg/1, Anchors/cyto/2, {Active\\slots}/slotA/3, {Inactive\\slot}/white/4, {Other\\FG}/other/5} {
     \node[note, anchor=south] at (\i*\cw+0.55,0.08) {\lab};
     \fill[\col] (\i*\cw+0.2,-0.02) rectangle (\i*\cw+0.9,0.06);
   }
   \node[note, anchor=south] at (6*\cw+0.85,0.08) {Voxels};
-  \foreach \name/\r in {{$\mathcal{L}_{\mathrm{ce}}$}/1, {$\mathcal{L}_{\mathrm{dice}}$}/2, {$\mathcal{L}_{\mathrm{cond}}$}/3, {$\mathcal{L}_{\mathrm{sup}}$}/4} {
-    \node[note, anchor=east] at (0.95,-\r*0.44+0.06) {\name};
+  \foreach \name/\r in {{$\mathcal{L}_{\mathrm{ce}}$}/1, {$\mathcal{L}_{\mathrm{dice}}$}/2, {$\mathcal{L}_{\mathrm{focus}}$}/3, {$\mathcal{L}_{\mathrm{sup}}$}/4, {$\mathcal{L}_{\mathrm{grp}}$}/5} {
+    \node[note, anchor=east] at (0.95,{-\r*0.31+0.04-(\r==5)*0.08}) {\name};
   }
   % 1 = channel included, 0 = not included, m = removed from the CE softmax
-  \foreach \row/\cells/\vox in {1/{1,1,1,m,1}/{all valid}, 2/{0,1,1,0,1}/{all valid}, 3/{0,0,1,0,0}/{all valid}, 4/{0,0,1,0,0}/{bg, anchor,\\other}} {
+  \foreach \row/\cells/\vox in {1/{1,1,1,m,1}/{all valid}, 2/{0,1,1,0,1}/{all valid}, 3/{0,0,1,0,0}/{all valid}, 4/{0,0,1,0,0}/{non-query}} {
     \foreach \v [count=\c] in \cells {
-      \coordinate (cc) at (\c*\cw+0.55,-\row*0.44+0.06);
+      \coordinate (cc) at (\c*\cw+0.55,-\row*0.31+0.04);
       \ifx\v\mm \node[font=\scriptsize, text=ink] at (cc) {$\times$};
-      \else \ifnum\v=1 \fill[ink] (cc) circle (2.4pt); \else \draw[line] (cc) circle (2.4pt); \fi \fi
+      \else \ifnum\v=1 \fill[ink] (cc) circle (2.2pt); \else \draw[line] (cc) circle (2.2pt); \fi \fi
     }
-    \node[note] at (6*\cw+0.85,-\row*0.44+0.06) {\vox};
+    \node[note] at (6*\cw+0.85,-\row*0.31+0.04) {\vox};
   }
-  \node[note, anchor=north west, align=left] at (0.3,-1.9)
-    {$\bullet$ channel included \quad $\circ$ not included\\$\times$ logit set to $-$10\textsuperscript{4} (removed from the CE softmax)};
+  \node[note, text=grp, anchor=west] at (1*\cw+0.2,-5*0.31-0.04) {group head $Q^{(g)}$: coarse target $\bar{Y}$ (all queries)};
+  \node[note] at (6*\cw+0.85,-5*0.31-0.04) {all valid};
+  \node[note, anchor=north west, align=left] at (0.3,-1.80)
+    {$\bullet$ channel included \quad $\circ$ not included \quad $\times$ removed from the softmax};
+\end{scope}
 \end{scope}
 \end{tikzpicture}
 \end{sansmath}

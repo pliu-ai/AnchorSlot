@@ -1,0 +1,7047 @@
+{
+  "schema": "source-roi-overlap-audit-v1",
+  "rule": "Exclude each validation crop with any positive-volume source-space bounding-box intersection with a training crop from the same source volume; faces that only touch are not overlap.",
+  "limitations": "Axis-aligned native annotation boxes, not masked annotation support. Does not establish biological independence across regions from the same source volume or undo checkpoint selection.",
+  "original_split": "/projects/weilab/liupeng/data/nnUNet/nnUNet_preprocessed/Dataset202_Dataset101_CellMap_model_high_res/splits_final.json",
+  "split_sha256": "1c4135effcd3c20f1fa6a821bc0958f9a9fdbfe82829662c3e6c5dc9ff4d3626",
+  "train_count": 202,
+  "original_val_count": 17,
+  "retained_val_count": 16,
+  "retained_source_volumes": [
+    "jrc_cos7-1a",
+    "jrc_cos7-1b",
+    "jrc_ctl-id8-1",
+    "jrc_fly-mb-1a",
+    "jrc_fly-vnc-1",
+    "jrc_hela-2",
+    "jrc_hela-3",
+    "jrc_macrophage-2",
+    "jrc_mus-kidney",
+    "jrc_mus-liver",
+    "jrc_mus-liver-zon-1",
+    "jrc_mus-liver-zon-2",
+    "jrc_sum159-1",
+    "jrc_sum159-4",
+    "jrc_ut21-1413-003"
+  ],
+  "excluded_cases": [
+    "jrc_jurkat-1_crop126"
+  ],
+  "retained_cases": [
+    "jrc_cos7-1a_crop236",
+    "jrc_cos7-1b_crop235",
+    "jrc_ctl-id8-1_crop118",
+    "jrc_fly-mb-1a_crop121",
+    "jrc_fly-vnc-1_crop174",
+    "jrc_hela-2_crop15",
+    "jrc_hela-3_crop50",
+    "jrc_macrophage-2_crop31",
+    "jrc_mus-kidney_crop164",
+    "jrc_mus-liver-zon-1_crop266",
+    "jrc_mus-liver-zon-1_crop268",
+    "jrc_mus-liver-zon-2_crop342",
+    "jrc_mus-liver_crop125",
+    "jrc_sum159-1_crop20",
+    "jrc_sum159-4_crop219",
+    "jrc_ut21-1413-003_crop190"
+  ],
+  "cross_split_overlaps": [
+    {
+      "a": "jrc_jurkat-1_crop180",
+      "b": "jrc_jurkat-1_crop126",
+      "subsets": [
+        "train",
+        "val"
+      ],
+      "intersection_nm3": 440320000.0,
+      "fraction_a": 1.0,
+      "fraction_b": 1.0,
+      "exact_box": true
+    },
+    {
+      "a": "jrc_jurkat-1_crop182",
+      "b": "jrc_jurkat-1_crop126",
+      "subsets": [
+        "train",
+        "val"
+      ],
+      "intersection_nm3": 440320000.0,
+      "fraction_a": 1.0,
+      "fraction_b": 1.0,
+      "exact_box": true
+    }
+  ],
+  "all_overlaps": [
+    {
+      "a": "jrc_cos7-1a_crop234",
+      "b": "jrc_cos7-1a_crop237",
+      "subsets": [
+        "train",
+        "train"
+      ],
+      "intersection_nm3": 171266304.0,
+      "fraction_a": 0.3345045,
+      "fraction_b": 0.3475371428571429,
+      "exact_box": false
+    },
+    {
+      "a": "jrc_cos7-1a_crop239",
+      "b": "jrc_cos7-1a_crop254",
+      "subsets": [
+        "train",
+        "train"
+      ],
+      "intersection_nm3": 292357416.0,
+      "fraction_a": 0.76389375,
+      "fraction_b": 0.571010578125,
+      "exact_box": false
+    },
+    {
+      "a": "jrc_cos7-1b_crop240",
+      "b": "jrc_cos7-1b_crop258",
+      "subsets": [
+        "train",
+        "train"
+      ],
+      "intersection_nm3": 9736352.0,
+      "fraction_a": 0.0190163125,
+      "fraction_b": 0.0190163125,
+      "exact_box": false
+    },
+    {
+      "a": "jrc_cos7-1b_crop240",
+      "b": "jrc_cos7-1b_crop291",
+      "subsets": [
+        "train",
+        "train"
+      ],
+      "intersection_nm3": 512000000.0,
+      "fraction_a": 1.0,
+      "fraction_b": 1.0,
+      "exact_box": true
+    },
+    {
+      "a": "jrc_cos7-1b_crop258",
+      "b": "jrc_cos7-1b_crop291",
+      "subsets": [
+        "train",
+        "train"
+      ],
+      "intersection_nm3": 9736352.0,
+      "fraction_a": 0.0190163125,
+      "fraction_b": 0.0190163125,
+      "exact_box": false
+    },
+    {
+      "a": "jrc_fly-vnc-1_crop173",
+      "b": "jrc_fly-vnc-1_crop185",
+      "subsets": [
+        "train",
+        "train"
+      ],
+      "intersection_nm3": 1152000000.0,
+      "fraction_a": 1.0,
+      "fraction_b": 1.0,
+      "exact_box": true
+    },
+    {
+      "a": "jrc_hela-2_crop113",
+      "b": "jrc_hela-2_crop6",
+      "subsets": [
+        "train",
+        "train"
+      ],
+      "intersection_nm3": 343429599.99999994,
+      "fraction_a": 0.06553999999999999,
+      "fraction_b": 0.26216000000000034,
+      "exact_box": false
+    },
+    {
+      "a": "jrc_hela-3_crop100",
+      "b": "jrc_hela-3_crop102",
+      "subsets": [
+        "train",
+        "train"
+      ],
+      "intersection_nm3": 50497344.00000085,
+      "fraction_a": 0.029148961637441385,
+      "fraction_b": 0.03607777777777838,
+      "exact_box": false
+    },
+    {
+      "a": "jrc_hela-3_crop101",
+      "b": "jrc_hela-3_crop181",
+      "subsets": [
+        "train",
+        "train"
+      ],
+      "intersection_nm3": 414720000.0,
+      "fraction_a": 1.0,
+      "fraction_b": 1.0,
+      "exact_box": true
+    },
+    {
+      "a": "jrc_jurkat-1_crop180",
+      "b": "jrc_jurkat-1_crop182",
+      "subsets": [
+        "train",
+        "train"
+      ],
+      "intersection_nm3": 440320000.0,
+      "fraction_a": 1.0,
+      "fraction_b": 1.0,
+      "exact_box": true
+    },
+    {
+      "a": "jrc_jurkat-1_crop180",
+      "b": "jrc_jurkat-1_crop126",
+      "subsets": [
+        "train",
+        "val"
+      ],
+      "intersection_nm3": 440320000.0,
+      "fraction_a": 1.0,
+      "fraction_b": 1.0,
+      "exact_box": true
+    },
+    {
+      "a": "jrc_jurkat-1_crop182",
+      "b": "jrc_jurkat-1_crop126",
+      "subsets": [
+        "train",
+        "val"
+      ],
+      "intersection_nm3": 440320000.0,
+      "fraction_a": 1.0,
+      "fraction_b": 1.0,
+      "exact_box": true
+    },
+    {
+      "a": "jrc_mus-liver_crop157",
+      "b": "jrc_mus-liver_crop183",
+      "subsets": [
+        "train",
+        "train"
+      ],
+      "intersection_nm3": 512000000.0,
+      "fraction_a": 1.0,
+      "fraction_b": 1.0,
+      "exact_box": true
+    },
+    {
+      "a": "jrc_mus-liver_crop171",
+      "b": "jrc_mus-liver_crop416",
+      "subsets": [
+        "train",
+        "train"
+      ],
+      "intersection_nm3": 1269760000.0,
+      "fraction_a": 1.0,
+      "fraction_b": 1.0,
+      "exact_box": true
+    },
+    {
+      "a": "jrc_mus-liver_crop172",
+      "b": "jrc_mus-liver_crop417",
+      "subsets": [
+        "train",
+        "train"
+      ],
+      "intersection_nm3": 6400000000.0,
+      "fraction_a": 1.0,
+      "fraction_b": 1.0,
+      "exact_box": true
+    }
+  ],
+  "records": {
+    "jrc_cos7-1a_crop234": {
+      "subset": "train",
+      "volume": "jrc_cos7-1a",
+      "crop": "crop234",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        2760.0,
+        5160.0,
+        10670.0
+      ],
+      "lower_edge_nm": [
+        2759.0,
+        5159.0,
+        10669.0
+      ],
+      "upper_edge_nm": [
+        3559.0,
+        5959.0,
+        11469.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1a/jrc_cos7-1a.zarr/recon-1/labels/groundtruth/crop234/all"
+    },
+    "jrc_cos7-1a_crop237": {
+      "subset": "train",
+      "volume": "jrc_cos7-1a",
+      "crop": "crop237",
+      "shape": [
+        385,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        2856.0,
+        4942.0,
+        10288.0
+      ],
+      "lower_edge_nm": [
+        2855.0,
+        4941.0,
+        10287.0
+      ],
+      "upper_edge_nm": [
+        3625.0,
+        5741.0,
+        11087.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1a/jrc_cos7-1a.zarr/recon-1/labels/groundtruth/crop237/all"
+    },
+    "jrc_cos7-1a_crop239": {
+      "subset": "train",
+      "volume": "jrc_cos7-1a",
+      "crop": "crop239",
+      "shape": [
+        299,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        3028.0,
+        4874.0,
+        9364.0
+      ],
+      "lower_edge_nm": [
+        3027.0,
+        4873.0,
+        9363.0
+      ],
+      "upper_edge_nm": [
+        3625.0,
+        5673.0,
+        10163.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1a/jrc_cos7-1a.zarr/recon-1/labels/groundtruth/crop239/all"
+    },
+    "jrc_cos7-1a_crop243": {
+      "subset": "train",
+      "volume": "jrc_cos7-1a",
+      "crop": "crop243",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        2.0,
+        1556.0,
+        9000.0
+      ],
+      "lower_edge_nm": [
+        1.0,
+        1555.0,
+        8999.0
+      ],
+      "upper_edge_nm": [
+        801.0,
+        2355.0,
+        9799.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1a/jrc_cos7-1a.zarr/recon-1/labels/groundtruth/crop243/all"
+    },
+    "jrc_cos7-1a_crop248": {
+      "subset": "train",
+      "volume": "jrc_cos7-1a",
+      "crop": "crop248",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        90.0,
+        4300.0,
+        7922.0
+      ],
+      "lower_edge_nm": [
+        89.0,
+        4299.0,
+        7921.0
+      ],
+      "upper_edge_nm": [
+        889.0,
+        5099.0,
+        8721.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1a/jrc_cos7-1a.zarr/recon-1/labels/groundtruth/crop248/all"
+    },
+    "jrc_cos7-1a_crop252": {
+      "subset": "train",
+      "volume": "jrc_cos7-1a",
+      "crop": "crop252",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        240.0,
+        5000.0,
+        9600.0
+      ],
+      "lower_edge_nm": [
+        239.0,
+        4999.0,
+        9599.0
+      ],
+      "upper_edge_nm": [
+        1039.0,
+        5799.0,
+        10399.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1a/jrc_cos7-1a.zarr/recon-1/labels/groundtruth/crop252/all"
+    },
+    "jrc_cos7-1a_crop254": {
+      "subset": "train",
+      "volume": "jrc_cos7-1a",
+      "crop": "crop254",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        2828.0,
+        5052.0,
+        9350.0
+      ],
+      "lower_edge_nm": [
+        2827.0,
+        5051.0,
+        9349.0
+      ],
+      "upper_edge_nm": [
+        3627.0,
+        5851.0,
+        10149.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1a/jrc_cos7-1a.zarr/recon-1/labels/groundtruth/crop254/all"
+    },
+    "jrc_cos7-1a_crop256": {
+      "subset": "train",
+      "volume": "jrc_cos7-1a",
+      "crop": "crop256",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        1582.0,
+        6158.0,
+        8574.0
+      ],
+      "lower_edge_nm": [
+        1581.0,
+        6157.0,
+        8573.0
+      ],
+      "upper_edge_nm": [
+        2381.0,
+        6957.0,
+        9373.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1a/jrc_cos7-1a.zarr/recon-1/labels/groundtruth/crop256/all"
+    },
+    "jrc_cos7-1a_crop292": {
+      "subset": "train",
+      "volume": "jrc_cos7-1a",
+      "crop": "crop292",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        862.0,
+        5282.0,
+        6702.0
+      ],
+      "lower_edge_nm": [
+        861.0,
+        5281.0,
+        6701.0
+      ],
+      "upper_edge_nm": [
+        1661.0,
+        6081.0,
+        7501.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1a/jrc_cos7-1a.zarr/recon-1/labels/groundtruth/crop292/all"
+    },
+    "jrc_cos7-1b_crop240": {
+      "subset": "train",
+      "volume": "jrc_cos7-1b",
+      "crop": "crop240",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        702.0,
+        5302.0,
+        11480.0
+      ],
+      "lower_edge_nm": [
+        701.0,
+        5301.0,
+        11479.0
+      ],
+      "upper_edge_nm": [
+        1501.0,
+        6101.0,
+        12279.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1b/jrc_cos7-1b.zarr/recon-1/labels/groundtruth/crop240/all"
+    },
+    "jrc_cos7-1b_crop241": {
+      "subset": "train",
+      "volume": "jrc_cos7-1b",
+      "crop": "crop241",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        1114.0,
+        6394.0,
+        15546.0
+      ],
+      "lower_edge_nm": [
+        1113.0,
+        6393.0,
+        15545.0
+      ],
+      "upper_edge_nm": [
+        1913.0,
+        7193.0,
+        16345.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1b/jrc_cos7-1b.zarr/recon-1/labels/groundtruth/crop241/all"
+    },
+    "jrc_cos7-1b_crop242": {
+      "subset": "train",
+      "volume": "jrc_cos7-1b",
+      "crop": "crop242",
+      "shape": [
+        285,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        1664.0,
+        6042.0,
+        35962.0
+      ],
+      "lower_edge_nm": [
+        1663.0,
+        6041.0,
+        35961.0
+      ],
+      "upper_edge_nm": [
+        2233.0,
+        6841.0,
+        36761.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1b/jrc_cos7-1b.zarr/recon-1/labels/groundtruth/crop242/all"
+    },
+    "jrc_cos7-1b_crop245": {
+      "subset": "train",
+      "volume": "jrc_cos7-1b",
+      "crop": "crop245",
+      "shape": [
+        243,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        1748.0,
+        5902.0,
+        12466.0
+      ],
+      "lower_edge_nm": [
+        1747.0,
+        5901.0,
+        12465.0
+      ],
+      "upper_edge_nm": [
+        2233.0,
+        6701.0,
+        13265.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1b/jrc_cos7-1b.zarr/recon-1/labels/groundtruth/crop245/all"
+    },
+    "jrc_cos7-1b_crop249": {
+      "subset": "train",
+      "volume": "jrc_cos7-1b",
+      "crop": "crop249",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        1252.0,
+        6760.0,
+        34716.0
+      ],
+      "lower_edge_nm": [
+        1251.0,
+        6759.0,
+        34715.0
+      ],
+      "upper_edge_nm": [
+        2051.0,
+        7559.0,
+        35515.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1b/jrc_cos7-1b.zarr/recon-1/labels/groundtruth/crop249/all"
+    },
+    "jrc_cos7-1b_crop255": {
+      "subset": "train",
+      "volume": "jrc_cos7-1b",
+      "crop": "crop255",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        832.0,
+        6476.0,
+        31870.0
+      ],
+      "lower_edge_nm": [
+        831.0,
+        6475.0,
+        31869.0
+      ],
+      "upper_edge_nm": [
+        1631.0,
+        7275.0,
+        32669.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1b/jrc_cos7-1b.zarr/recon-1/labels/groundtruth/crop255/all"
+    },
+    "jrc_cos7-1b_crop258": {
+      "subset": "train",
+      "volume": "jrc_cos7-1b",
+      "crop": "crop258",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        1420.0,
+        5378.0,
+        10844.0
+      ],
+      "lower_edge_nm": [
+        1419.0,
+        5377.0,
+        10843.0
+      ],
+      "upper_edge_nm": [
+        2219.0,
+        6177.0,
+        11643.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1b/jrc_cos7-1b.zarr/recon-1/labels/groundtruth/crop258/all"
+    },
+    "jrc_cos7-1b_crop259": {
+      "subset": "train",
+      "volume": "jrc_cos7-1b",
+      "crop": "crop259",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        248.0,
+        4608.0,
+        9300.0
+      ],
+      "lower_edge_nm": [
+        247.0,
+        4607.0,
+        9299.0
+      ],
+      "upper_edge_nm": [
+        1047.0,
+        5407.0,
+        10099.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1b/jrc_cos7-1b.zarr/recon-1/labels/groundtruth/crop259/all"
+    },
+    "jrc_cos7-1b_crop291": {
+      "subset": "train",
+      "volume": "jrc_cos7-1b",
+      "crop": "crop291",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        702.0,
+        5302.0,
+        11480.0
+      ],
+      "lower_edge_nm": [
+        701.0,
+        5301.0,
+        11479.0
+      ],
+      "upper_edge_nm": [
+        1501.0,
+        6101.0,
+        12279.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1b/jrc_cos7-1b.zarr/recon-1/labels/groundtruth/crop291/all"
+    },
+    "jrc_ctl-id8-1_crop116": {
+      "subset": "train",
+      "volume": "jrc_ctl-id8-1",
+      "crop": "crop116",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.74,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        20527.65,
+        7903.0,
+        35703.0
+      ],
+      "lower_edge_nm": [
+        20526.780000000002,
+        7902.0,
+        35702.0
+      ],
+      "upper_edge_nm": [
+        21222.780000000002,
+        8702.0,
+        36502.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ctl-id8-1/jrc_ctl-id8-1.zarr/recon-1/labels/groundtruth/crop116/all"
+    },
+    "jrc_ctl-id8-1_crop117": {
+      "subset": "train",
+      "volume": "jrc_ctl-id8-1",
+      "crop": "crop117",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.74,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        13282.29,
+        5283.0,
+        31659.0
+      ],
+      "lower_edge_nm": [
+        13281.42,
+        5282.0,
+        31658.0
+      ],
+      "upper_edge_nm": [
+        13977.42,
+        6082.0,
+        32458.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ctl-id8-1/jrc_ctl-id8-1.zarr/recon-1/labels/groundtruth/crop117/all"
+    },
+    "jrc_ctl-id8-1_crop119": {
+      "subset": "train",
+      "volume": "jrc_ctl-id8-1",
+      "crop": "crop119",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.74,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        7686.45,
+        3659.0,
+        19087.0
+      ],
+      "lower_edge_nm": [
+        7685.58,
+        3658.0,
+        19086.0
+      ],
+      "upper_edge_nm": [
+        8381.58,
+        4458.0,
+        19886.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ctl-id8-1/jrc_ctl-id8-1.zarr/recon-1/labels/groundtruth/crop119/all"
+    },
+    "jrc_ctl-id8-1_crop130": {
+      "subset": "train",
+      "volume": "jrc_ctl-id8-1",
+      "crop": "crop130",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.74,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        17747.13,
+        9999.0,
+        39199.0
+      ],
+      "lower_edge_nm": [
+        17746.260000000002,
+        9998.0,
+        39198.0
+      ],
+      "upper_edge_nm": [
+        18442.260000000002,
+        10798.0,
+        39998.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ctl-id8-1/jrc_ctl-id8-1.zarr/recon-1/labels/groundtruth/crop130/all"
+    },
+    "jrc_fly-mb-1a_crop120": {
+      "subset": "train",
+      "volume": "jrc_fly-mb-1a",
+      "crop": "crop120",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        19043.0,
+        19807.0,
+        25971.0
+      ],
+      "lower_edge_nm": [
+        19042.0,
+        19806.0,
+        25970.0
+      ],
+      "upper_edge_nm": [
+        19842.0,
+        20606.0,
+        26770.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_fly-mb-1a/jrc_fly-mb-1a.zarr/recon-1/labels/groundtruth/crop120/all"
+    },
+    "jrc_fly-mb-1a_crop122": {
+      "subset": "train",
+      "volume": "jrc_fly-mb-1a",
+      "crop": "crop122",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        10355.0,
+        21223.0,
+        33403.0
+      ],
+      "lower_edge_nm": [
+        10354.0,
+        21222.0,
+        33402.0
+      ],
+      "upper_edge_nm": [
+        11154.0,
+        22022.0,
+        34202.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_fly-mb-1a/jrc_fly-mb-1a.zarr/recon-1/labels/groundtruth/crop122/all"
+    },
+    "jrc_fly-mb-1a_crop123": {
+      "subset": "train",
+      "volume": "jrc_fly-mb-1a",
+      "crop": "crop123",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        1999.0,
+        10199.0,
+        13679.0
+      ],
+      "lower_edge_nm": [
+        1998.0,
+        10198.0,
+        13678.0
+      ],
+      "upper_edge_nm": [
+        2798.0,
+        10998.0,
+        14478.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_fly-mb-1a/jrc_fly-mb-1a.zarr/recon-1/labels/groundtruth/crop123/all"
+    },
+    "jrc_fly-mb-1a_crop134": {
+      "subset": "train",
+      "volume": "jrc_fly-mb-1a",
+      "crop": "crop134",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        2755.0,
+        9795.0,
+        27435.0
+      ],
+      "lower_edge_nm": [
+        2754.0,
+        9794.0,
+        27434.0
+      ],
+      "upper_edge_nm": [
+        3554.0,
+        10594.0,
+        28234.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_fly-mb-1a/jrc_fly-mb-1a.zarr/recon-1/labels/groundtruth/crop134/all"
+    },
+    "jrc_fly-mb-1a_crop178": {
+      "subset": "train",
+      "volume": "jrc_fly-mb-1a",
+      "crop": "crop178",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        26155.0,
+        21099.0,
+        12891.0
+      ],
+      "lower_edge_nm": [
+        26154.0,
+        21098.0,
+        12890.0
+      ],
+      "upper_edge_nm": [
+        26954.0,
+        21898.0,
+        13690.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_fly-mb-1a/jrc_fly-mb-1a.zarr/recon-1/labels/groundtruth/crop178/all"
+    },
+    "jrc_fly-vnc-1_crop173": {
+      "subset": "train",
+      "volume": "jrc_fly-vnc-1",
+      "crop": "crop173",
+      "shape": [
+        400,
+        600,
+        600
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        3599.0,
+        799.0,
+        14779.0
+      ],
+      "lower_edge_nm": [
+        3598.0,
+        798.0,
+        14778.0
+      ],
+      "upper_edge_nm": [
+        4398.0,
+        1998.0,
+        15978.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_fly-vnc-1/jrc_fly-vnc-1.zarr/recon-1/labels/groundtruth/crop173/all"
+    },
+    "jrc_fly-vnc-1_crop176": {
+      "subset": "train",
+      "volume": "jrc_fly-vnc-1",
+      "crop": "crop176",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        1999.0,
+        799.0,
+        1399.0
+      ],
+      "lower_edge_nm": [
+        1998.0,
+        798.0,
+        1398.0
+      ],
+      "upper_edge_nm": [
+        2798.0,
+        1598.0,
+        2198.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_fly-vnc-1/jrc_fly-vnc-1.zarr/recon-1/labels/groundtruth/crop176/all"
+    },
+    "jrc_fly-vnc-1_crop185": {
+      "subset": "train",
+      "volume": "jrc_fly-vnc-1",
+      "crop": "crop185",
+      "shape": [
+        400,
+        600,
+        600
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        3599.0,
+        799.0,
+        14779.0
+      ],
+      "lower_edge_nm": [
+        3598.0,
+        798.0,
+        14778.0
+      ],
+      "upper_edge_nm": [
+        4398.0,
+        1998.0,
+        15978.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_fly-vnc-1/jrc_fly-vnc-1.zarr/recon-1/labels/groundtruth/crop185/all"
+    },
+    "jrc_fly-vnc-1_crop78": {
+      "subset": "train",
+      "volume": "jrc_fly-vnc-1",
+      "crop": "crop78",
+      "shape": [
+        600,
+        600,
+        600
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        4243.0,
+        3159.0,
+        14439.0
+      ],
+      "lower_edge_nm": [
+        4242.0,
+        3158.0,
+        14438.0
+      ],
+      "upper_edge_nm": [
+        5442.0,
+        4358.0,
+        15638.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_fly-vnc-1/jrc_fly-vnc-1.zarr/recon-1/labels/groundtruth/crop78/all"
+    },
+    "jrc_fly-vnc-1_crop79": {
+      "subset": "train",
+      "volume": "jrc_fly-vnc-1",
+      "crop": "crop79",
+      "shape": [
+        500,
+        500,
+        500
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        2383.0,
+        6379.0,
+        24039.0
+      ],
+      "lower_edge_nm": [
+        2382.0,
+        6378.0,
+        24038.0
+      ],
+      "upper_edge_nm": [
+        3382.0,
+        7378.0,
+        25038.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_fly-vnc-1/jrc_fly-vnc-1.zarr/recon-1/labels/groundtruth/crop79/all"
+    },
+    "jrc_hela-2_crop1": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop1",
+      "shape": [
+        200,
+        1000,
+        1000
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        3132.21,
+        899.0,
+        25863.0
+      ],
+      "lower_edge_nm": [
+        3130.9,
+        898.0,
+        25862.0
+      ],
+      "upper_edge_nm": [
+        3654.9,
+        2898.0,
+        27862.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop1/all"
+    },
+    "jrc_hela-2_crop113": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop113",
+      "shape": [
+        500,
+        1000,
+        1000
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        15587.69,
+        99.0,
+        12499.0
+      ],
+      "lower_edge_nm": [
+        15586.380000000001,
+        98.0,
+        12498.0
+      ],
+      "upper_edge_nm": [
+        16896.38,
+        2098.0,
+        14498.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop113/all"
+    },
+    "jrc_hela-2_crop13": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop13",
+      "shape": [
+        220,
+        320,
+        320
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        20591.89,
+        3039.0,
+        20639.0
+      ],
+      "lower_edge_nm": [
+        20590.579999999998,
+        3038.0,
+        20638.0
+      ],
+      "upper_edge_nm": [
+        21166.98,
+        3678.0,
+        21278.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop13/all"
+    },
+    "jrc_hela-2_crop14": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop14",
+      "shape": [
+        130,
+        300,
+        300
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        23138.53,
+        1499.0,
+        25319.0
+      ],
+      "lower_edge_nm": [
+        23137.219999999998,
+        1498.0,
+        25318.0
+      ],
+      "upper_edge_nm": [
+        23477.819999999996,
+        2098.0,
+        25918.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop14/all"
+    },
+    "jrc_hela-2_crop155": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop155",
+      "shape": [
+        800,
+        800,
+        800
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        7413.29,
+        2331.0,
+        29815.0
+      ],
+      "lower_edge_nm": [
+        7411.98,
+        2330.0,
+        29814.0
+      ],
+      "upper_edge_nm": [
+        9507.98,
+        3930.0,
+        31414.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop155/all"
+    },
+    "jrc_hela-2_crop16": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop16",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        9954.69,
+        4439.0,
+        20839.0
+      ],
+      "lower_edge_nm": [
+        9953.380000000001,
+        4438.0,
+        20838.0
+      ],
+      "upper_edge_nm": [
+        11001.380000000001,
+        5238.0,
+        21638.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop16/all"
+    },
+    "jrc_hela-2_crop18": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop18",
+      "shape": [
+        220,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        19543.89,
+        799.0,
+        7639.0
+      ],
+      "lower_edge_nm": [
+        19542.579999999998,
+        798.0,
+        7638.0
+      ],
+      "upper_edge_nm": [
+        20118.98,
+        1598.0,
+        8438.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop18/all"
+    },
+    "jrc_hela-2_crop19": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop19",
+      "shape": [
+        110,
+        300,
+        300
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        25863.33,
+        1599.0,
+        27599.0
+      ],
+      "lower_edge_nm": [
+        25862.02,
+        1598.0,
+        27598.0
+      ],
+      "upper_edge_nm": [
+        26150.22,
+        2198.0,
+        28198.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop19/all"
+    },
+    "jrc_hela-2_crop23": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop23",
+      "shape": [
+        500,
+        500,
+        500
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        10635.89,
+        1119.0,
+        10999.0
+      ],
+      "lower_edge_nm": [
+        10634.58,
+        1118.0,
+        10998.0
+      ],
+      "upper_edge_nm": [
+        11944.58,
+        2118.0,
+        11998.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop23/all"
+    },
+    "jrc_hela-2_crop28": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop28",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        2671.09,
+        1539.0,
+        31023.0
+      ],
+      "lower_edge_nm": [
+        2669.78,
+        1538.0,
+        31022.0
+      ],
+      "upper_edge_nm": [
+        3717.78,
+        2338.0,
+        31822.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop28/all"
+    },
+    "jrc_hela-2_crop3": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop3",
+      "shape": [
+        500,
+        800,
+        800
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        20953.45,
+        799.0,
+        31199.0
+      ],
+      "lower_edge_nm": [
+        20952.14,
+        798.0,
+        31198.0
+      ],
+      "upper_edge_nm": [
+        22262.14,
+        2398.0,
+        32798.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop3/all"
+    },
+    "jrc_hela-2_crop4": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop4",
+      "shape": [
+        476,
+        600,
+        600
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        14335.33,
+        799.0,
+        24399.0
+      ],
+      "lower_edge_nm": [
+        14334.02,
+        798.0,
+        24398.0
+      ],
+      "upper_edge_nm": [
+        15581.140000000001,
+        1998.0,
+        25598.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop4/all"
+    },
+    "jrc_hela-2_crop54": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop54",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        13308.29,
+        3911.0,
+        41331.0
+      ],
+      "lower_edge_nm": [
+        13306.980000000001,
+        3910.0,
+        41330.0
+      ],
+      "upper_edge_nm": [
+        14354.980000000001,
+        4710.0,
+        42130.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop54/all"
+    },
+    "jrc_hela-2_crop55": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop55",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        28902.53,
+        483.0,
+        12775.0
+      ],
+      "lower_edge_nm": [
+        28901.219999999998,
+        482.0,
+        12774.0
+      ],
+      "upper_edge_nm": [
+        29949.219999999998,
+        1282.0,
+        13574.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop55/all"
+    },
+    "jrc_hela-2_crop56": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop56",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        25973.37,
+        4411.0,
+        6267.0
+      ],
+      "lower_edge_nm": [
+        25972.059999999998,
+        4410.0,
+        6266.0
+      ],
+      "upper_edge_nm": [
+        27020.059999999998,
+        5210.0,
+        7066.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop56/all"
+    },
+    "jrc_hela-2_crop57": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop57",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        12186.93,
+        3363.0,
+        1583.0
+      ],
+      "lower_edge_nm": [
+        12185.62,
+        3362.0,
+        1582.0
+      ],
+      "upper_edge_nm": [
+        13233.62,
+        4162.0,
+        2382.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop57/all"
+    },
+    "jrc_hela-2_crop58": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop58",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        11631.49,
+        2387.0,
+        43655.0
+      ],
+      "lower_edge_nm": [
+        11630.18,
+        2386.0,
+        43654.0
+      ],
+      "upper_edge_nm": [
+        12678.18,
+        3186.0,
+        44454.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop58/all"
+    },
+    "jrc_hela-2_crop59": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop59",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        7119.85,
+        2227.0,
+        43831.0
+      ],
+      "lower_edge_nm": [
+        7118.54,
+        2226.0,
+        43830.0
+      ],
+      "upper_edge_nm": [
+        8166.54,
+        3026.0,
+        44630.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop59/all"
+    },
+    "jrc_hela-2_crop6": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop6",
+      "shape": [
+        500,
+        500,
+        500
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        15713.45,
+        1599.0,
+        12079.0
+      ],
+      "lower_edge_nm": [
+        15712.140000000001,
+        1598.0,
+        12078.0
+      ],
+      "upper_edge_nm": [
+        17022.14,
+        2598.0,
+        13078.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop6/all"
+    },
+    "jrc_hela-2_crop7": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop7",
+      "shape": [
+        160,
+        600,
+        600
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        -1.31,
+        959.0,
+        33119.0
+      ],
+      "lower_edge_nm": [
+        -2.62,
+        958.0,
+        33118.0
+      ],
+      "upper_edge_nm": [
+        416.58000000000004,
+        2158.0,
+        34318.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop7/all"
+    },
+    "jrc_hela-2_crop8": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop8",
+      "shape": [
+        200,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        6543.45,
+        1119.0,
+        13539.0
+      ],
+      "lower_edge_nm": [
+        6542.139999999999,
+        1118.0,
+        13538.0
+      ],
+      "upper_edge_nm": [
+        7066.139999999999,
+        1918.0,
+        14338.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop8/all"
+    },
+    "jrc_hela-2_crop9": {
+      "subset": "train",
+      "volume": "jrc_hela-2",
+      "crop": "crop9",
+      "shape": [
+        106,
+        200,
+        200
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        8429.85,
+        1679.0,
+        11599.0
+      ],
+      "lower_edge_nm": [
+        8428.54,
+        1678.0,
+        11598.0
+      ],
+      "upper_edge_nm": [
+        8706.26,
+        2078.0,
+        11998.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop9/all"
+    },
+    "jrc_hela-3_crop100": {
+      "subset": "train",
+      "volume": "jrc_hela-3",
+      "crop": "crop100",
+      "shape": [
+        980,
+        440,
+        620
+      ],
+      "scale_nm": [
+        1.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        9528.03,
+        355.0,
+        27839.0
+      ],
+      "lower_edge_nm": [
+        9527.220000000001,
+        354.0,
+        27838.0
+      ],
+      "upper_edge_nm": [
+        11114.820000000002,
+        1234.0,
+        29078.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-3/jrc_hela-3.zarr/recon-1/labels/groundtruth/crop100/all"
+    },
+    "jrc_hela-3_crop101": {
+      "subset": "train",
+      "volume": "jrc_hela-3",
+      "crop": "crop101",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        19507.23,
+        467.0,
+        40931.0
+      ],
+      "lower_edge_nm": [
+        19506.42,
+        466.0,
+        40930.0
+      ],
+      "upper_edge_nm": [
+        20154.42,
+        1266.0,
+        41730.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-3/jrc_hela-3.zarr/recon-1/labels/groundtruth/crop101/all"
+    },
+    "jrc_hela-3_crop102": {
+      "subset": "train",
+      "volume": "jrc_hela-3",
+      "crop": "crop102",
+      "shape": [
+        600,
+        600,
+        600
+      ],
+      "scale_nm": [
+        1.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        11050.83,
+        471.0,
+        27659.0
+      ],
+      "lower_edge_nm": [
+        11050.02,
+        470.0,
+        27658.0
+      ],
+      "upper_edge_nm": [
+        12022.02,
+        1670.0,
+        28858.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-3/jrc_hela-3.zarr/recon-1/labels/groundtruth/crop102/all"
+    },
+    "jrc_hela-3_crop111": {
+      "subset": "train",
+      "volume": "jrc_hela-3",
+      "crop": "crop111",
+      "shape": [
+        1000,
+        500,
+        1000
+      ],
+      "scale_nm": [
+        1.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        20265.39,
+        1271.0,
+        28735.0
+      ],
+      "lower_edge_nm": [
+        20264.579999999998,
+        1270.0,
+        28734.0
+      ],
+      "upper_edge_nm": [
+        21884.579999999998,
+        2270.0,
+        30734.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-3/jrc_hela-3.zarr/recon-1/labels/groundtruth/crop111/all"
+    },
+    "jrc_hela-3_crop181": {
+      "subset": "train",
+      "volume": "jrc_hela-3",
+      "crop": "crop181",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        19507.23,
+        467.0,
+        40931.0
+      ],
+      "lower_edge_nm": [
+        19506.42,
+        466.0,
+        40930.0
+      ],
+      "upper_edge_nm": [
+        20154.42,
+        1266.0,
+        41730.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-3/jrc_hela-3.zarr/recon-1/labels/groundtruth/crop181/all"
+    },
+    "jrc_hela-3_crop27": {
+      "subset": "train",
+      "volume": "jrc_hela-3",
+      "crop": "crop27",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        11627.55,
+        3199.0,
+        22799.0
+      ],
+      "lower_edge_nm": [
+        11626.74,
+        3198.0,
+        22798.0
+      ],
+      "upper_edge_nm": [
+        12274.74,
+        3998.0,
+        23598.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-3/jrc_hela-3.zarr/recon-1/labels/groundtruth/crop27/all"
+    },
+    "jrc_hela-3_crop33": {
+      "subset": "train",
+      "volume": "jrc_hela-3",
+      "crop": "crop33",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        18305.19,
+        919.0,
+        13799.0
+      ],
+      "lower_edge_nm": [
+        18304.379999999997,
+        918.0,
+        13798.0
+      ],
+      "upper_edge_nm": [
+        18952.379999999997,
+        1718.0,
+        14598.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-3/jrc_hela-3.zarr/recon-1/labels/groundtruth/crop33/all"
+    },
+    "jrc_hela-3_crop34": {
+      "subset": "train",
+      "volume": "jrc_hela-3",
+      "crop": "crop34",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        19115.19,
+        2599.0,
+        26679.0
+      ],
+      "lower_edge_nm": [
+        19114.379999999997,
+        2598.0,
+        26678.0
+      ],
+      "upper_edge_nm": [
+        19762.379999999997,
+        3398.0,
+        27478.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-3/jrc_hela-3.zarr/recon-1/labels/groundtruth/crop34/all"
+    },
+    "jrc_hela-3_crop51": {
+      "subset": "train",
+      "volume": "jrc_hela-3",
+      "crop": "crop51",
+      "shape": [
+        512,
+        512,
+        512
+      ],
+      "scale_nm": [
+        1.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        23858.55,
+        331.0,
+        10735.0
+      ],
+      "lower_edge_nm": [
+        23857.739999999998,
+        330.0,
+        10734.0
+      ],
+      "upper_edge_nm": [
+        24687.179999999997,
+        1354.0,
+        11758.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-3/jrc_hela-3.zarr/recon-1/labels/groundtruth/crop51/all"
+    },
+    "jrc_hela-3_crop60": {
+      "subset": "train",
+      "volume": "jrc_hela-3",
+      "crop": "crop60",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        18519.03,
+        2039.0,
+        7751.0
+      ],
+      "lower_edge_nm": [
+        18518.219999999998,
+        2038.0,
+        7750.0
+      ],
+      "upper_edge_nm": [
+        19166.219999999998,
+        2838.0,
+        8550.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-3/jrc_hela-3.zarr/recon-1/labels/groundtruth/crop60/all"
+    },
+    "jrc_hela-3_crop61": {
+      "subset": "train",
+      "volume": "jrc_hela-3",
+      "crop": "crop61",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        13565.07,
+        2259.0,
+        43895.0
+      ],
+      "lower_edge_nm": [
+        13564.26,
+        2258.0,
+        43894.0
+      ],
+      "upper_edge_nm": [
+        14212.26,
+        3058.0,
+        44694.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-3/jrc_hela-3.zarr/recon-1/labels/groundtruth/crop61/all"
+    },
+    "jrc_hela-3_crop62": {
+      "subset": "train",
+      "volume": "jrc_hela-3",
+      "crop": "crop62",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        12800.43,
+        2435.0,
+        6415.0
+      ],
+      "lower_edge_nm": [
+        12799.62,
+        2434.0,
+        6414.0
+      ],
+      "upper_edge_nm": [
+        13447.62,
+        3234.0,
+        7214.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-3/jrc_hela-3.zarr/recon-1/labels/groundtruth/crop62/all"
+    },
+    "jrc_hela-3_crop63": {
+      "subset": "train",
+      "volume": "jrc_hela-3",
+      "crop": "crop63",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        37369.35,
+        2591.0,
+        25599.0
+      ],
+      "lower_edge_nm": [
+        37368.54,
+        2590.0,
+        25598.0
+      ],
+      "upper_edge_nm": [
+        38016.54,
+        3390.0,
+        26398.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-3/jrc_hela-3.zarr/recon-1/labels/groundtruth/crop63/all"
+    },
+    "jrc_hela-3_crop64": {
+      "subset": "train",
+      "volume": "jrc_hela-3",
+      "crop": "crop64",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        18399.15,
+        2687.0,
+        43559.0
+      ],
+      "lower_edge_nm": [
+        18398.34,
+        2686.0,
+        43558.0
+      ],
+      "upper_edge_nm": [
+        19046.34,
+        3486.0,
+        44358.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-3/jrc_hela-3.zarr/recon-1/labels/groundtruth/crop64/all"
+    },
+    "jrc_hela-3_crop65": {
+      "subset": "train",
+      "volume": "jrc_hela-3",
+      "crop": "crop65",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        15680.79,
+        2491.0,
+        4183.0
+      ],
+      "lower_edge_nm": [
+        15679.980000000001,
+        2490.0,
+        4182.0
+      ],
+      "upper_edge_nm": [
+        16327.980000000001,
+        3290.0,
+        4982.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-3/jrc_hela-3.zarr/recon-1/labels/groundtruth/crop65/all"
+    },
+    "jrc_jurkat-1_crop107": {
+      "subset": "train",
+      "volume": "jrc_jurkat-1",
+      "crop": "crop107",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.72,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        14103.14,
+        1739.0,
+        24799.0
+      ],
+      "lower_edge_nm": [
+        14102.279999999999,
+        1738.0,
+        24798.0
+      ],
+      "upper_edge_nm": [
+        14790.279999999999,
+        2538.0,
+        25598.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_jurkat-1/jrc_jurkat-1.zarr/recon-1/labels/groundtruth/crop107/all"
+    },
+    "jrc_jurkat-1_crop112": {
+      "subset": "train",
+      "volume": "jrc_jurkat-1",
+      "crop": "crop112",
+      "shape": [
+        1000,
+        500,
+        1000
+      ],
+      "scale_nm": [
+        1.72,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        6793.14,
+        5499.0,
+        6499.0
+      ],
+      "lower_edge_nm": [
+        6792.280000000001,
+        5498.0,
+        6498.0
+      ],
+      "upper_edge_nm": [
+        8512.28,
+        6498.0,
+        8498.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_jurkat-1/jrc_jurkat-1.zarr/recon-1/labels/groundtruth/crop112/all"
+    },
+    "jrc_jurkat-1_crop180": {
+      "subset": "train",
+      "volume": "jrc_jurkat-1",
+      "crop": "crop180",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.72,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        12727.14,
+        5187.0,
+        20559.0
+      ],
+      "lower_edge_nm": [
+        12726.279999999999,
+        5186.0,
+        20558.0
+      ],
+      "upper_edge_nm": [
+        13414.279999999999,
+        5986.0,
+        21358.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_jurkat-1/jrc_jurkat-1.zarr/recon-1/labels/groundtruth/crop180/all"
+    },
+    "jrc_jurkat-1_crop182": {
+      "subset": "train",
+      "volume": "jrc_jurkat-1",
+      "crop": "crop182",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.72,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        12727.14,
+        5187.0,
+        20559.0
+      ],
+      "lower_edge_nm": [
+        12726.279999999999,
+        5186.0,
+        20558.0
+      ],
+      "upper_edge_nm": [
+        13414.279999999999,
+        5986.0,
+        21358.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_jurkat-1/jrc_jurkat-1.zarr/recon-1/labels/groundtruth/crop182/all"
+    },
+    "jrc_jurkat-1_crop35": {
+      "subset": "train",
+      "volume": "jrc_jurkat-1",
+      "crop": "crop35",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.72,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        13387.62,
+        5883.0,
+        6099.0
+      ],
+      "lower_edge_nm": [
+        13386.76,
+        5882.0,
+        6098.0
+      ],
+      "upper_edge_nm": [
+        14074.76,
+        6682.0,
+        6898.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_jurkat-1/jrc_jurkat-1.zarr/recon-1/labels/groundtruth/crop35/all"
+    },
+    "jrc_jurkat-1_crop36": {
+      "subset": "train",
+      "volume": "jrc_jurkat-1",
+      "crop": "crop36",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.72,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        15558.26,
+        6879.0,
+        5003.0
+      ],
+      "lower_edge_nm": [
+        15557.4,
+        6878.0,
+        5002.0
+      ],
+      "upper_edge_nm": [
+        16245.4,
+        7678.0,
+        5802.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_jurkat-1/jrc_jurkat-1.zarr/recon-1/labels/groundtruth/crop36/all"
+    },
+    "jrc_jurkat-1_crop37": {
+      "subset": "train",
+      "volume": "jrc_jurkat-1",
+      "crop": "crop37",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.72,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        18348.1,
+        3183.0,
+        12871.0
+      ],
+      "lower_edge_nm": [
+        18347.239999999998,
+        3182.0,
+        12870.0
+      ],
+      "upper_edge_nm": [
+        19035.239999999998,
+        3982.0,
+        13670.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_jurkat-1/jrc_jurkat-1.zarr/recon-1/labels/groundtruth/crop37/all"
+    },
+    "jrc_jurkat-1_crop38": {
+      "subset": "train",
+      "volume": "jrc_jurkat-1",
+      "crop": "crop38",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.72,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        18946.66,
+        5119.0,
+        28507.0
+      ],
+      "lower_edge_nm": [
+        18945.8,
+        5118.0,
+        28506.0
+      ],
+      "upper_edge_nm": [
+        19633.8,
+        5918.0,
+        29306.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_jurkat-1/jrc_jurkat-1.zarr/recon-1/labels/groundtruth/crop38/all"
+    },
+    "jrc_jurkat-1_crop43": {
+      "subset": "train",
+      "volume": "jrc_jurkat-1",
+      "crop": "crop43",
+      "shape": [
+        512,
+        512,
+        512
+      ],
+      "scale_nm": [
+        1.72,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        14901.22,
+        895.0,
+        28271.0
+      ],
+      "lower_edge_nm": [
+        14900.359999999999,
+        894.0,
+        28270.0
+      ],
+      "upper_edge_nm": [
+        15780.999999999998,
+        1918.0,
+        29294.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_jurkat-1/jrc_jurkat-1.zarr/recon-1/labels/groundtruth/crop43/all"
+    },
+    "jrc_jurkat-1_crop47": {
+      "subset": "train",
+      "volume": "jrc_jurkat-1",
+      "crop": "crop47",
+      "shape": [
+        512,
+        512,
+        512
+      ],
+      "scale_nm": [
+        1.72,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        8200.1,
+        5111.0,
+        12471.0
+      ],
+      "lower_edge_nm": [
+        8199.24,
+        5110.0,
+        12470.0
+      ],
+      "upper_edge_nm": [
+        9079.88,
+        6134.0,
+        13494.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_jurkat-1/jrc_jurkat-1.zarr/recon-1/labels/groundtruth/crop47/all"
+    },
+    "jrc_jurkat-1_crop66": {
+      "subset": "train",
+      "volume": "jrc_jurkat-1",
+      "crop": "crop66",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.72,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        14773.94,
+        9107.0,
+        8155.0
+      ],
+      "lower_edge_nm": [
+        14773.08,
+        9106.0,
+        8154.0
+      ],
+      "upper_edge_nm": [
+        15461.08,
+        9906.0,
+        8954.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_jurkat-1/jrc_jurkat-1.zarr/recon-1/labels/groundtruth/crop66/all"
+    },
+    "jrc_jurkat-1_crop67": {
+      "subset": "train",
+      "volume": "jrc_jurkat-1",
+      "crop": "crop67",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.72,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        13673.14,
+        10623.0,
+        34099.0
+      ],
+      "lower_edge_nm": [
+        13672.279999999999,
+        10622.0,
+        34098.0
+      ],
+      "upper_edge_nm": [
+        14360.279999999999,
+        11422.0,
+        34898.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_jurkat-1/jrc_jurkat-1.zarr/recon-1/labels/groundtruth/crop67/all"
+    },
+    "jrc_jurkat-1_crop68": {
+      "subset": "train",
+      "volume": "jrc_jurkat-1",
+      "crop": "crop68",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.72,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        17312.66,
+        343.0,
+        24151.0
+      ],
+      "lower_edge_nm": [
+        17311.8,
+        342.0,
+        24150.0
+      ],
+      "upper_edge_nm": [
+        17999.8,
+        1142.0,
+        24950.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_jurkat-1/jrc_jurkat-1.zarr/recon-1/labels/groundtruth/crop68/all"
+    },
+    "jrc_jurkat-1_crop69": {
+      "subset": "train",
+      "volume": "jrc_jurkat-1",
+      "crop": "crop69",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.72,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        14560.66,
+        8123.0,
+        23307.0
+      ],
+      "lower_edge_nm": [
+        14559.8,
+        8122.0,
+        23306.0
+      ],
+      "upper_edge_nm": [
+        15247.8,
+        8922.0,
+        24106.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_jurkat-1/jrc_jurkat-1.zarr/recon-1/labels/groundtruth/crop69/all"
+    },
+    "jrc_jurkat-1_crop70": {
+      "subset": "train",
+      "volume": "jrc_jurkat-1",
+      "crop": "crop70",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.72,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        9737.78,
+        8299.0,
+        10335.0
+      ],
+      "lower_edge_nm": [
+        9736.92,
+        8298.0,
+        10334.0
+      ],
+      "upper_edge_nm": [
+        10424.92,
+        9098.0,
+        11134.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_jurkat-1/jrc_jurkat-1.zarr/recon-1/labels/groundtruth/crop70/all"
+    },
+    "jrc_jurkat-1_crop71": {
+      "subset": "train",
+      "volume": "jrc_jurkat-1",
+      "crop": "crop71",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.72,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        9042.9,
+        567.0,
+        25171.0
+      ],
+      "lower_edge_nm": [
+        9042.039999999999,
+        566.0,
+        25170.0
+      ],
+      "upper_edge_nm": [
+        9730.039999999999,
+        1366.0,
+        25970.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_jurkat-1/jrc_jurkat-1.zarr/recon-1/labels/groundtruth/crop71/all"
+    },
+    "jrc_macrophage-2_crop109": {
+      "subset": "train",
+      "volume": "jrc_macrophage-2",
+      "crop": "crop109",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.68,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        28223.16,
+        1599.0,
+        32399.0
+      ],
+      "lower_edge_nm": [
+        28222.32,
+        1598.0,
+        32398.0
+      ],
+      "upper_edge_nm": [
+        28894.32,
+        2398.0,
+        33198.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_macrophage-2/jrc_macrophage-2.zarr/recon-1/labels/groundtruth/crop109/all"
+    },
+    "jrc_macrophage-2_crop110": {
+      "subset": "train",
+      "volume": "jrc_macrophage-2",
+      "crop": "crop110",
+      "shape": [
+        1002,
+        500,
+        1004
+      ],
+      "scale_nm": [
+        1.68,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        18512.76,
+        1259.0,
+        9219.0
+      ],
+      "lower_edge_nm": [
+        18511.92,
+        1258.0,
+        9218.0
+      ],
+      "upper_edge_nm": [
+        20195.28,
+        2258.0,
+        11226.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_macrophage-2/jrc_macrophage-2.zarr/recon-1/labels/groundtruth/crop110/all"
+    },
+    "jrc_macrophage-2_crop32": {
+      "subset": "train",
+      "volume": "jrc_macrophage-2",
+      "crop": "crop32",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.68,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        24950.52,
+        979.0,
+        15359.0
+      ],
+      "lower_edge_nm": [
+        24949.68,
+        978.0,
+        15358.0
+      ],
+      "upper_edge_nm": [
+        25621.68,
+        1778.0,
+        16158.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_macrophage-2/jrc_macrophage-2.zarr/recon-1/labels/groundtruth/crop32/all"
+    },
+    "jrc_macrophage-2_crop39": {
+      "subset": "train",
+      "volume": "jrc_macrophage-2",
+      "crop": "crop39",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.68,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        18220.44,
+        2811.0,
+        22139.0
+      ],
+      "lower_edge_nm": [
+        18219.6,
+        2810.0,
+        22138.0
+      ],
+      "upper_edge_nm": [
+        18891.6,
+        3610.0,
+        22938.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_macrophage-2/jrc_macrophage-2.zarr/recon-1/labels/groundtruth/crop39/all"
+    },
+    "jrc_macrophage-2_crop40": {
+      "subset": "train",
+      "volume": "jrc_macrophage-2",
+      "crop": "crop40",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.68,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        16473.24,
+        951.0,
+        9255.0
+      ],
+      "lower_edge_nm": [
+        16472.4,
+        950.0,
+        9254.0
+      ],
+      "upper_edge_nm": [
+        17144.4,
+        1750.0,
+        10054.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_macrophage-2/jrc_macrophage-2.zarr/recon-1/labels/groundtruth/crop40/all"
+    },
+    "jrc_macrophage-2_crop42": {
+      "subset": "train",
+      "volume": "jrc_macrophage-2",
+      "crop": "crop42",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.68,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        8872.92,
+        3035.0,
+        25383.0
+      ],
+      "lower_edge_nm": [
+        8872.08,
+        3034.0,
+        25382.0
+      ],
+      "upper_edge_nm": [
+        9544.08,
+        3834.0,
+        26182.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_macrophage-2/jrc_macrophage-2.zarr/recon-1/labels/groundtruth/crop42/all"
+    },
+    "jrc_macrophage-2_crop48": {
+      "subset": "train",
+      "volume": "jrc_macrophage-2",
+      "crop": "crop48",
+      "shape": [
+        512,
+        512,
+        512
+      ],
+      "scale_nm": [
+        1.68,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        18694.2,
+        2315.0,
+        24427.0
+      ],
+      "lower_edge_nm": [
+        18693.36,
+        2314.0,
+        24426.0
+      ],
+      "upper_edge_nm": [
+        19553.52,
+        3338.0,
+        25450.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_macrophage-2/jrc_macrophage-2.zarr/recon-1/labels/groundtruth/crop48/all"
+    },
+    "jrc_macrophage-2_crop49": {
+      "subset": "train",
+      "volume": "jrc_macrophage-2",
+      "crop": "crop49",
+      "shape": [
+        512,
+        512,
+        512
+      ],
+      "scale_nm": [
+        1.68,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        18381.72,
+        1091.0,
+        33959.0
+      ],
+      "lower_edge_nm": [
+        18380.88,
+        1090.0,
+        33958.0
+      ],
+      "upper_edge_nm": [
+        19241.04,
+        2114.0,
+        34982.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_macrophage-2/jrc_macrophage-2.zarr/recon-1/labels/groundtruth/crop49/all"
+    },
+    "jrc_macrophage-2_crop72": {
+      "subset": "train",
+      "volume": "jrc_macrophage-2",
+      "crop": "crop72",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.68,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        18287.64,
+        195.0,
+        2747.0
+      ],
+      "lower_edge_nm": [
+        18286.8,
+        194.0,
+        2746.0
+      ],
+      "upper_edge_nm": [
+        18958.8,
+        994.0,
+        3546.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_macrophage-2/jrc_macrophage-2.zarr/recon-1/labels/groundtruth/crop72/all"
+    },
+    "jrc_macrophage-2_crop73": {
+      "subset": "train",
+      "volume": "jrc_macrophage-2",
+      "crop": "crop73",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.68,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        17034.36,
+        5387.0,
+        6115.0
+      ],
+      "lower_edge_nm": [
+        17033.52,
+        5386.0,
+        6114.0
+      ],
+      "upper_edge_nm": [
+        17705.52,
+        6186.0,
+        6914.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_macrophage-2/jrc_macrophage-2.zarr/recon-1/labels/groundtruth/crop73/all"
+    },
+    "jrc_macrophage-2_crop74": {
+      "subset": "train",
+      "volume": "jrc_macrophage-2",
+      "crop": "crop74",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.68,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        14443.8,
+        3419.0,
+        38227.0
+      ],
+      "lower_edge_nm": [
+        14442.96,
+        3418.0,
+        38226.0
+      ],
+      "upper_edge_nm": [
+        15114.96,
+        4218.0,
+        39026.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_macrophage-2/jrc_macrophage-2.zarr/recon-1/labels/groundtruth/crop74/all"
+    },
+    "jrc_macrophage-2_crop75": {
+      "subset": "train",
+      "volume": "jrc_macrophage-2",
+      "crop": "crop75",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.68,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        12111.96,
+        19.0,
+        25575.0
+      ],
+      "lower_edge_nm": [
+        12111.119999999999,
+        18.0,
+        25574.0
+      ],
+      "upper_edge_nm": [
+        12783.119999999999,
+        818.0,
+        26374.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_macrophage-2/jrc_macrophage-2.zarr/recon-1/labels/groundtruth/crop75/all"
+    },
+    "jrc_macrophage-2_crop76": {
+      "subset": "train",
+      "volume": "jrc_macrophage-2",
+      "crop": "crop76",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.68,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        6903.96,
+        751.0,
+        4111.0
+      ],
+      "lower_edge_nm": [
+        6903.12,
+        750.0,
+        4110.0
+      ],
+      "upper_edge_nm": [
+        7575.12,
+        1550.0,
+        4910.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_macrophage-2/jrc_macrophage-2.zarr/recon-1/labels/groundtruth/crop76/all"
+    },
+    "jrc_macrophage-2_crop77": {
+      "subset": "train",
+      "volume": "jrc_macrophage-2",
+      "crop": "crop77",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.68,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        3537.24,
+        3527.0,
+        27599.0
+      ],
+      "lower_edge_nm": [
+        3536.3999999999996,
+        3526.0,
+        27598.0
+      ],
+      "upper_edge_nm": [
+        4208.4,
+        4326.0,
+        28398.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_macrophage-2/jrc_macrophage-2.zarr/recon-1/labels/groundtruth/crop77/all"
+    },
+    "jrc_mus-kidney_crop140": {
+      "subset": "train",
+      "volume": "jrc_mus-kidney",
+      "crop": "crop140",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        88198.0,
+        30198.0,
+        54918.0
+      ],
+      "lower_edge_nm": [
+        88196.0,
+        30196.0,
+        54916.0
+      ],
+      "upper_edge_nm": [
+        88996.0,
+        30996.0,
+        55716.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-kidney/jrc_mus-kidney.zarr/recon-1/labels/groundtruth/crop140/all"
+    },
+    "jrc_mus-kidney_crop141": {
+      "subset": "train",
+      "volume": "jrc_mus-kidney",
+      "crop": "crop141",
+      "shape": [
+        300,
+        300,
+        300
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        93998.0,
+        17398.0,
+        71198.0
+      ],
+      "lower_edge_nm": [
+        93996.0,
+        17396.0,
+        71196.0
+      ],
+      "upper_edge_nm": [
+        95196.0,
+        18596.0,
+        72396.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-kidney/jrc_mus-kidney.zarr/recon-1/labels/groundtruth/crop141/all"
+    },
+    "jrc_mus-kidney_crop146": {
+      "subset": "train",
+      "volume": "jrc_mus-kidney",
+      "crop": "crop146",
+      "shape": [
+        200,
+        200,
+        180
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        90718.0,
+        25150.0,
+        40102.0
+      ],
+      "lower_edge_nm": [
+        90716.0,
+        25148.0,
+        40100.0
+      ],
+      "upper_edge_nm": [
+        91516.0,
+        25948.0,
+        40820.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-kidney/jrc_mus-kidney.zarr/recon-1/labels/groundtruth/crop146/all"
+    },
+    "jrc_mus-kidney_crop147": {
+      "subset": "train",
+      "volume": "jrc_mus-kidney",
+      "crop": "crop147",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        97262.0,
+        3406.0,
+        13838.0
+      ],
+      "lower_edge_nm": [
+        97260.0,
+        3404.0,
+        13836.0
+      ],
+      "upper_edge_nm": [
+        98060.0,
+        4204.0,
+        14636.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-kidney/jrc_mus-kidney.zarr/recon-1/labels/groundtruth/crop147/all"
+    },
+    "jrc_mus-kidney_crop148": {
+      "subset": "train",
+      "volume": "jrc_mus-kidney",
+      "crop": "crop148",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        100662.0,
+        14934.0,
+        10406.0
+      ],
+      "lower_edge_nm": [
+        100660.0,
+        14932.0,
+        10404.0
+      ],
+      "upper_edge_nm": [
+        101460.0,
+        15732.0,
+        11204.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-kidney/jrc_mus-kidney.zarr/recon-1/labels/groundtruth/crop148/all"
+    },
+    "jrc_mus-kidney_crop149": {
+      "subset": "train",
+      "volume": "jrc_mus-kidney",
+      "crop": "crop149",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        96598.0,
+        22006.0,
+        11174.0
+      ],
+      "lower_edge_nm": [
+        96596.0,
+        22004.0,
+        11172.0
+      ],
+      "upper_edge_nm": [
+        97396.0,
+        22804.0,
+        11972.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-kidney/jrc_mus-kidney.zarr/recon-1/labels/groundtruth/crop149/all"
+    },
+    "jrc_mus-kidney_crop156": {
+      "subset": "train",
+      "volume": "jrc_mus-kidney",
+      "crop": "crop156",
+      "shape": [
+        600,
+        600,
+        600
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        2526.0,
+        17446.0,
+        82398.0
+      ],
+      "lower_edge_nm": [
+        2524.0,
+        17444.0,
+        82396.0
+      ],
+      "upper_edge_nm": [
+        4924.0,
+        19844.0,
+        84796.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-kidney/jrc_mus-kidney.zarr/recon-1/labels/groundtruth/crop156/all"
+    },
+    "jrc_mus-kidney_crop158": {
+      "subset": "train",
+      "volume": "jrc_mus-kidney",
+      "crop": "crop158",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        95910.0,
+        30430.0,
+        51342.0
+      ],
+      "lower_edge_nm": [
+        95908.0,
+        30428.0,
+        51340.0
+      ],
+      "upper_edge_nm": [
+        96708.0,
+        31228.0,
+        52140.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-kidney/jrc_mus-kidney.zarr/recon-1/labels/groundtruth/crop158/all"
+    },
+    "jrc_mus-kidney_crop159": {
+      "subset": "train",
+      "volume": "jrc_mus-kidney",
+      "crop": "crop159",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        89374.0,
+        35846.0,
+        42270.0
+      ],
+      "lower_edge_nm": [
+        89372.0,
+        35844.0,
+        42268.0
+      ],
+      "upper_edge_nm": [
+        90172.0,
+        36644.0,
+        43068.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-kidney/jrc_mus-kidney.zarr/recon-1/labels/groundtruth/crop159/all"
+    },
+    "jrc_mus-kidney_crop160": {
+      "subset": "train",
+      "volume": "jrc_mus-kidney",
+      "crop": "crop160",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        81294.0,
+        47158.0,
+        73798.0
+      ],
+      "lower_edge_nm": [
+        81292.0,
+        47156.0,
+        73796.0
+      ],
+      "upper_edge_nm": [
+        82092.0,
+        47956.0,
+        74596.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-kidney/jrc_mus-kidney.zarr/recon-1/labels/groundtruth/crop160/all"
+    },
+    "jrc_mus-kidney_crop161": {
+      "subset": "train",
+      "volume": "jrc_mus-kidney",
+      "crop": "crop161",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        68006.0,
+        44078.0,
+        44806.0
+      ],
+      "lower_edge_nm": [
+        68004.0,
+        44076.0,
+        44804.0
+      ],
+      "upper_edge_nm": [
+        68804.0,
+        44876.0,
+        45604.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-kidney/jrc_mus-kidney.zarr/recon-1/labels/groundtruth/crop161/all"
+    },
+    "jrc_mus-kidney_crop162": {
+      "subset": "train",
+      "volume": "jrc_mus-kidney",
+      "crop": "crop162",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        84398.0,
+        56814.0,
+        38142.0
+      ],
+      "lower_edge_nm": [
+        84396.0,
+        56812.0,
+        38140.0
+      ],
+      "upper_edge_nm": [
+        85196.0,
+        57612.0,
+        38940.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-kidney/jrc_mus-kidney.zarr/recon-1/labels/groundtruth/crop162/all"
+    },
+    "jrc_mus-kidney_crop163": {
+      "subset": "train",
+      "volume": "jrc_mus-kidney",
+      "crop": "crop163",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        88382.0,
+        8678.0,
+        24150.0
+      ],
+      "lower_edge_nm": [
+        88380.0,
+        8676.0,
+        24148.0
+      ],
+      "upper_edge_nm": [
+        89180.0,
+        9476.0,
+        24948.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-kidney/jrc_mus-kidney.zarr/recon-1/labels/groundtruth/crop163/all"
+    },
+    "jrc_mus-kidney_crop165": {
+      "subset": "train",
+      "volume": "jrc_mus-kidney",
+      "crop": "crop165",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        82902.0,
+        25798.0,
+        34902.0
+      ],
+      "lower_edge_nm": [
+        82900.0,
+        25796.0,
+        34900.0
+      ],
+      "upper_edge_nm": [
+        83700.0,
+        26596.0,
+        35700.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-kidney/jrc_mus-kidney.zarr/recon-1/labels/groundtruth/crop165/all"
+    },
+    "jrc_mus-kidney_crop166": {
+      "subset": "train",
+      "volume": "jrc_mus-kidney",
+      "crop": "crop166",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        782.0,
+        36590.0,
+        61246.0
+      ],
+      "lower_edge_nm": [
+        780.0,
+        36588.0,
+        61244.0
+      ],
+      "upper_edge_nm": [
+        1580.0,
+        37388.0,
+        62044.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-kidney/jrc_mus-kidney.zarr/recon-1/labels/groundtruth/crop166/all"
+    },
+    "jrc_mus-liver-zon-1_crop267": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop267",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        222142.0,
+        92766.0,
+        71254.0
+      ],
+      "lower_edge_nm": [
+        222140.0,
+        92764.0,
+        71252.0
+      ],
+      "upper_edge_nm": [
+        223740.0,
+        94364.0,
+        72852.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop267/all"
+    },
+    "jrc_mus-liver-zon-1_crop269": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop269",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        213310.0,
+        95062.0,
+        11150.0
+      ],
+      "lower_edge_nm": [
+        213308.0,
+        95060.0,
+        11148.0
+      ],
+      "upper_edge_nm": [
+        214908.0,
+        96660.0,
+        12748.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop269/all"
+    },
+    "jrc_mus-liver-zon-1_crop272": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop272",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        197198.0,
+        56886.0,
+        158710.0
+      ],
+      "lower_edge_nm": [
+        197196.0,
+        56884.0,
+        158708.0
+      ],
+      "upper_edge_nm": [
+        198796.0,
+        58484.0,
+        160308.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop272/all"
+    },
+    "jrc_mus-liver-zon-1_crop273": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop273",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        195334.0,
+        60574.0,
+        65254.0
+      ],
+      "lower_edge_nm": [
+        195332.0,
+        60572.0,
+        65252.0
+      ],
+      "upper_edge_nm": [
+        196932.0,
+        62172.0,
+        66852.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop273/all"
+    },
+    "jrc_mus-liver-zon-1_crop274": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop274",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        95470.0,
+        48398.0,
+        76798.0
+      ],
+      "lower_edge_nm": [
+        95468.0,
+        48396.0,
+        76796.0
+      ],
+      "upper_edge_nm": [
+        97068.0,
+        49996.0,
+        78396.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop274/all"
+    },
+    "jrc_mus-liver-zon-1_crop275": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop275",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        78438.0,
+        43406.0,
+        78190.0
+      ],
+      "lower_edge_nm": [
+        78436.0,
+        43404.0,
+        78188.0
+      ],
+      "upper_edge_nm": [
+        80036.0,
+        45004.0,
+        79788.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop275/all"
+    },
+    "jrc_mus-liver-zon-1_crop276": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop276",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        118438.0,
+        63238.0,
+        144942.0
+      ],
+      "lower_edge_nm": [
+        118436.0,
+        63236.0,
+        144940.0
+      ],
+      "upper_edge_nm": [
+        120036.0,
+        64836.0,
+        146540.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop276/all"
+    },
+    "jrc_mus-liver-zon-1_crop277": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop277",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        118502.0,
+        61502.0,
+        124566.0
+      ],
+      "lower_edge_nm": [
+        118500.0,
+        61500.0,
+        124564.0
+      ],
+      "upper_edge_nm": [
+        120100.0,
+        63100.0,
+        126164.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop277/all"
+    },
+    "jrc_mus-liver-zon-1_crop278": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop278",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        114478.0,
+        56798.0,
+        129062.0
+      ],
+      "lower_edge_nm": [
+        114476.0,
+        56796.0,
+        129060.0
+      ],
+      "upper_edge_nm": [
+        116076.0,
+        58396.0,
+        130660.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop278/all"
+    },
+    "jrc_mus-liver-zon-1_crop279": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop279",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        92398.0,
+        123598.0,
+        79582.0
+      ],
+      "lower_edge_nm": [
+        92396.0,
+        123596.0,
+        79580.0
+      ],
+      "upper_edge_nm": [
+        93996.0,
+        125196.0,
+        81180.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop279/all"
+    },
+    "jrc_mus-liver-zon-1_crop280": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop280",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        92390.0,
+        73614.0,
+        11246.0
+      ],
+      "lower_edge_nm": [
+        92388.0,
+        73612.0,
+        11244.0
+      ],
+      "upper_edge_nm": [
+        93988.0,
+        75212.0,
+        12844.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop280/all"
+    },
+    "jrc_mus-liver-zon-1_crop298": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop298",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        116758.0,
+        83774.0,
+        101958.0
+      ],
+      "lower_edge_nm": [
+        116756.0,
+        83772.0,
+        101956.0
+      ],
+      "upper_edge_nm": [
+        118356.0,
+        85372.0,
+        103556.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop298/all"
+    },
+    "jrc_mus-liver-zon-1_crop313": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop313",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        194814.0,
+        103534.0,
+        82398.0
+      ],
+      "lower_edge_nm": [
+        194812.0,
+        103532.0,
+        82396.0
+      ],
+      "upper_edge_nm": [
+        196412.0,
+        105132.0,
+        83996.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop313/all"
+    },
+    "jrc_mus-liver-zon-1_crop319": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop319",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        201838.0,
+        90982.0,
+        16918.0
+      ],
+      "lower_edge_nm": [
+        201836.0,
+        90980.0,
+        16916.0
+      ],
+      "upper_edge_nm": [
+        203436.0,
+        92580.0,
+        18516.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop319/all"
+    },
+    "jrc_mus-liver-zon-1_crop320": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop320",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        203198.0,
+        91998.0,
+        23198.0
+      ],
+      "lower_edge_nm": [
+        203196.0,
+        91996.0,
+        23196.0
+      ],
+      "upper_edge_nm": [
+        204796.0,
+        93596.0,
+        24796.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop320/all"
+    },
+    "jrc_mus-liver-zon-1_crop321": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop321",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        202382.0,
+        110798.0,
+        37998.0
+      ],
+      "lower_edge_nm": [
+        202380.0,
+        110796.0,
+        37996.0
+      ],
+      "upper_edge_nm": [
+        203980.0,
+        112396.0,
+        39596.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop321/all"
+    },
+    "jrc_mus-liver-zon-1_crop322": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop322",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        184398.0,
+        140238.0,
+        62798.0
+      ],
+      "lower_edge_nm": [
+        184396.0,
+        140236.0,
+        62796.0
+      ],
+      "upper_edge_nm": [
+        185996.0,
+        141836.0,
+        64396.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop322/all"
+    },
+    "jrc_mus-liver-zon-1_crop323": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop323",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        180614.0,
+        142302.0,
+        61038.0
+      ],
+      "lower_edge_nm": [
+        180612.0,
+        142300.0,
+        61036.0
+      ],
+      "upper_edge_nm": [
+        182212.0,
+        143900.0,
+        62636.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop323/all"
+    },
+    "jrc_mus-liver-zon-1_crop325": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop325",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        147198.0,
+        139534.0,
+        93990.0
+      ],
+      "lower_edge_nm": [
+        147196.0,
+        139532.0,
+        93988.0
+      ],
+      "upper_edge_nm": [
+        148796.0,
+        141132.0,
+        95588.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop325/all"
+    },
+    "jrc_mus-liver-zon-1_crop326": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop326",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        133758.0,
+        139998.0,
+        81726.0
+      ],
+      "lower_edge_nm": [
+        133756.0,
+        139996.0,
+        81724.0
+      ],
+      "upper_edge_nm": [
+        135356.0,
+        141596.0,
+        83324.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop326/all"
+    },
+    "jrc_mus-liver-zon-1_crop377": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop377",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        279198.0,
+        109598.0,
+        155198.0
+      ],
+      "lower_edge_nm": [
+        279196.0,
+        109596.0,
+        155196.0
+      ],
+      "upper_edge_nm": [
+        280796.0,
+        111196.0,
+        156796.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop377/all"
+    },
+    "jrc_mus-liver-zon-2_crop333": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-2",
+      "crop": "crop333",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        203678.0,
+        87558.0,
+        105598.0
+      ],
+      "lower_edge_nm": [
+        203676.0,
+        87556.0,
+        105596.0
+      ],
+      "upper_edge_nm": [
+        205276.0,
+        89156.0,
+        107196.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-2/jrc_mus-liver-zon-2.zarr/recon-1/labels/groundtruth/crop333/all"
+    },
+    "jrc_mus-liver-zon-2_crop340": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-2",
+      "crop": "crop340",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        207998.0,
+        101262.0,
+        134302.0
+      ],
+      "lower_edge_nm": [
+        207996.0,
+        101260.0,
+        134300.0
+      ],
+      "upper_edge_nm": [
+        209596.0,
+        102860.0,
+        135900.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-2/jrc_mus-liver-zon-2.zarr/recon-1/labels/groundtruth/crop340/all"
+    },
+    "jrc_mus-liver-zon-2_crop341": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-2",
+      "crop": "crop341",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        206870.0,
+        130726.0,
+        39246.0
+      ],
+      "lower_edge_nm": [
+        206868.0,
+        130724.0,
+        39244.0
+      ],
+      "upper_edge_nm": [
+        208468.0,
+        132324.0,
+        40844.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-2/jrc_mus-liver-zon-2.zarr/recon-1/labels/groundtruth/crop341/all"
+    },
+    "jrc_mus-liver-zon-2_crop368": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-2",
+      "crop": "crop368",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        266398.0,
+        117838.0,
+        147998.0
+      ],
+      "lower_edge_nm": [
+        266396.0,
+        117836.0,
+        147996.0
+      ],
+      "upper_edge_nm": [
+        267996.0,
+        119436.0,
+        149596.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-2/jrc_mus-liver-zon-2.zarr/recon-1/labels/groundtruth/crop368/all"
+    },
+    "jrc_mus-liver-zon-2_crop369": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-2",
+      "crop": "crop369",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        336798.0,
+        66478.0,
+        40798.0
+      ],
+      "lower_edge_nm": [
+        336796.0,
+        66476.0,
+        40796.0
+      ],
+      "upper_edge_nm": [
+        338396.0,
+        68076.0,
+        42396.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-2/jrc_mus-liver-zon-2.zarr/recon-1/labels/groundtruth/crop369/all"
+    },
+    "jrc_mus-liver-zon-2_crop370": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-2",
+      "crop": "crop370",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        191998.0,
+        118238.0,
+        107198.0
+      ],
+      "lower_edge_nm": [
+        191996.0,
+        118236.0,
+        107196.0
+      ],
+      "upper_edge_nm": [
+        193596.0,
+        119836.0,
+        108796.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-2/jrc_mus-liver-zon-2.zarr/recon-1/labels/groundtruth/crop370/all"
+    },
+    "jrc_mus-liver-zon-2_crop376": {
+      "subset": "train",
+      "volume": "jrc_mus-liver-zon-2",
+      "crop": "crop376",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        277598.0,
+        134158.0,
+        46398.0
+      ],
+      "lower_edge_nm": [
+        277596.0,
+        134156.0,
+        46396.0
+      ],
+      "upper_edge_nm": [
+        279196.0,
+        135756.0,
+        47996.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-2/jrc_mus-liver-zon-2.zarr/recon-1/labels/groundtruth/crop376/all"
+    },
+    "jrc_mus-liver_crop124": {
+      "subset": "train",
+      "volume": "jrc_mus-liver",
+      "crop": "crop124",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        43798.0,
+        36358.0,
+        76838.0
+      ],
+      "lower_edge_nm": [
+        43796.0,
+        36356.0,
+        76836.0
+      ],
+      "upper_edge_nm": [
+        45396.0,
+        37956.0,
+        78436.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop124/all"
+    },
+    "jrc_mus-liver_crop131": {
+      "subset": "train",
+      "volume": "jrc_mus-liver",
+      "crop": "crop131",
+      "shape": [
+        100,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        18158.0,
+        23302.0,
+        23718.0
+      ],
+      "lower_edge_nm": [
+        18156.0,
+        23300.0,
+        23716.0
+      ],
+      "upper_edge_nm": [
+        18556.0,
+        24900.0,
+        25316.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop131/all"
+    },
+    "jrc_mus-liver_crop133": {
+      "subset": "train",
+      "volume": "jrc_mus-liver",
+      "crop": "crop133",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        34198.0,
+        58798.0,
+        45598.0
+      ],
+      "lower_edge_nm": [
+        34196.0,
+        58796.0,
+        45596.0
+      ],
+      "upper_edge_nm": [
+        35796.0,
+        60396.0,
+        47196.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop133/all"
+    },
+    "jrc_mus-liver_crop138": {
+      "subset": "train",
+      "volume": "jrc_mus-liver",
+      "crop": "crop138",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        63998.0,
+        36798.0,
+        51998.0
+      ],
+      "lower_edge_nm": [
+        63996.0,
+        36796.0,
+        51996.0
+      ],
+      "upper_edge_nm": [
+        65596.0,
+        38396.0,
+        53596.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop138/all"
+    },
+    "jrc_mus-liver_crop139": {
+      "subset": "train",
+      "volume": "jrc_mus-liver",
+      "crop": "crop139",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        36670.0,
+        46422.0,
+        72998.0
+      ],
+      "lower_edge_nm": [
+        36668.0,
+        46420.0,
+        72996.0
+      ],
+      "upper_edge_nm": [
+        37468.0,
+        47220.0,
+        73796.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop139/all"
+    },
+    "jrc_mus-liver_crop142": {
+      "subset": "train",
+      "volume": "jrc_mus-liver",
+      "crop": "crop142",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        34806.0,
+        41126.0,
+        65886.0
+      ],
+      "lower_edge_nm": [
+        34804.0,
+        41124.0,
+        65884.0
+      ],
+      "upper_edge_nm": [
+        35604.0,
+        41924.0,
+        66684.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop142/all"
+    },
+    "jrc_mus-liver_crop143": {
+      "subset": "train",
+      "volume": "jrc_mus-liver",
+      "crop": "crop143",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        21078.0,
+        39622.0,
+        51798.0
+      ],
+      "lower_edge_nm": [
+        21076.0,
+        39620.0,
+        51796.0
+      ],
+      "upper_edge_nm": [
+        21876.0,
+        40420.0,
+        52596.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop143/all"
+    },
+    "jrc_mus-liver_crop144": {
+      "subset": "train",
+      "volume": "jrc_mus-liver",
+      "crop": "crop144",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        40054.0,
+        48726.0,
+        45638.0
+      ],
+      "lower_edge_nm": [
+        40052.0,
+        48724.0,
+        45636.0
+      ],
+      "upper_edge_nm": [
+        40852.0,
+        49524.0,
+        46436.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop144/all"
+    },
+    "jrc_mus-liver_crop145": {
+      "subset": "train",
+      "volume": "jrc_mus-liver",
+      "crop": "crop145",
+      "shape": [
+        360,
+        750,
+        750
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        17558.0,
+        61750.0,
+        46350.0
+      ],
+      "lower_edge_nm": [
+        17556.0,
+        61748.0,
+        46348.0
+      ],
+      "upper_edge_nm": [
+        18996.0,
+        64748.0,
+        49348.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop145/all"
+    },
+    "jrc_mus-liver_crop150": {
+      "subset": "train",
+      "volume": "jrc_mus-liver",
+      "crop": "crop150",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        34790.0,
+        16198.0,
+        72998.0
+      ],
+      "lower_edge_nm": [
+        34788.0,
+        16196.0,
+        72996.0
+      ],
+      "upper_edge_nm": [
+        35588.0,
+        16996.0,
+        73796.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop150/all"
+    },
+    "jrc_mus-liver_crop151": {
+      "subset": "train",
+      "volume": "jrc_mus-liver",
+      "crop": "crop151",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        13574.0,
+        41502.0,
+        44742.0
+      ],
+      "lower_edge_nm": [
+        13572.0,
+        41500.0,
+        44740.0
+      ],
+      "upper_edge_nm": [
+        14372.0,
+        42300.0,
+        45540.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop151/all"
+    },
+    "jrc_mus-liver_crop157": {
+      "subset": "train",
+      "volume": "jrc_mus-liver",
+      "crop": "crop157",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        69238.0,
+        38198.0,
+        23998.0
+      ],
+      "lower_edge_nm": [
+        69236.0,
+        38196.0,
+        23996.0
+      ],
+      "upper_edge_nm": [
+        70036.0,
+        38996.0,
+        24796.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop157/all"
+    },
+    "jrc_mus-liver_crop171": {
+      "subset": "train",
+      "volume": "jrc_mus-liver",
+      "crop": "crop171",
+      "shape": [
+        400,
+        124,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        35750.0,
+        52774.0,
+        54246.0
+      ],
+      "lower_edge_nm": [
+        35748.0,
+        52772.0,
+        54244.0
+      ],
+      "upper_edge_nm": [
+        37348.0,
+        53268.0,
+        55844.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop171/all"
+    },
+    "jrc_mus-liver_crop172": {
+      "subset": "train",
+      "volume": "jrc_mus-liver",
+      "crop": "crop172",
+      "shape": [
+        500,
+        500,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        16310.0,
+        57430.0,
+        33254.0
+      ],
+      "lower_edge_nm": [
+        16308.0,
+        57428.0,
+        33252.0
+      ],
+      "upper_edge_nm": [
+        18308.0,
+        59428.0,
+        34852.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop172/all"
+    },
+    "jrc_mus-liver_crop175": {
+      "subset": "train",
+      "volume": "jrc_mus-liver",
+      "crop": "crop175",
+      "shape": [
+        800,
+        300,
+        600
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        16342.0,
+        58022.0,
+        36958.0
+      ],
+      "lower_edge_nm": [
+        16340.0,
+        58020.0,
+        36956.0
+      ],
+      "upper_edge_nm": [
+        19540.0,
+        59220.0,
+        39356.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop175/all"
+    },
+    "jrc_mus-liver_crop183": {
+      "subset": "train",
+      "volume": "jrc_mus-liver",
+      "crop": "crop183",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        69238.0,
+        38198.0,
+        23998.0
+      ],
+      "lower_edge_nm": [
+        69236.0,
+        38196.0,
+        23996.0
+      ],
+      "upper_edge_nm": [
+        70036.0,
+        38996.0,
+        24796.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop183/all"
+    },
+    "jrc_mus-liver_crop416": {
+      "subset": "train",
+      "volume": "jrc_mus-liver",
+      "crop": "crop416",
+      "shape": [
+        400,
+        124,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        35750.0,
+        52774.0,
+        54246.0
+      ],
+      "lower_edge_nm": [
+        35748.0,
+        52772.0,
+        54244.0
+      ],
+      "upper_edge_nm": [
+        37348.0,
+        53268.0,
+        55844.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop416/all"
+    },
+    "jrc_mus-liver_crop417": {
+      "subset": "train",
+      "volume": "jrc_mus-liver",
+      "crop": "crop417",
+      "shape": [
+        500,
+        500,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        16310.0,
+        57430.0,
+        33254.0
+      ],
+      "lower_edge_nm": [
+        16308.0,
+        57428.0,
+        33252.0
+      ],
+      "upper_edge_nm": [
+        18308.0,
+        59428.0,
+        34852.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop417/all"
+    },
+    "jrc_mus-nacc-1_crop115": {
+      "subset": "train",
+      "volume": "jrc_mus-nacc-1",
+      "crop": "crop115",
+      "shape": [
+        600,
+        600,
+        600
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        -1.0,
+        7999.0,
+        6399.0
+      ],
+      "lower_edge_nm": [
+        -2.0,
+        7998.0,
+        6398.0
+      ],
+      "upper_edge_nm": [
+        1198.0,
+        9198.0,
+        7598.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-nacc-1/jrc_mus-nacc-1.zarr/recon-1/labels/groundtruth/crop115/all"
+    },
+    "jrc_sum159-1_crop22": {
+      "subset": "train",
+      "volume": "jrc_sum159-1",
+      "crop": "crop22",
+      "shape": [
+        200,
+        340,
+        340
+      ],
+      "scale_nm": [
+        2.28,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        24531.66,
+        1839.0,
+        16039.0
+      ],
+      "lower_edge_nm": [
+        24530.52,
+        1838.0,
+        16038.0
+      ],
+      "upper_edge_nm": [
+        24986.52,
+        2518.0,
+        16718.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-1/jrc_sum159-1.zarr/recon-1/labels/groundtruth/crop22/all"
+    },
+    "jrc_sum159-1_crop25": {
+      "subset": "train",
+      "volume": "jrc_sum159-1",
+      "crop": "crop25",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.28,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        16487.82,
+        7283.0,
+        5439.0
+      ],
+      "lower_edge_nm": [
+        16486.68,
+        7282.0,
+        5438.0
+      ],
+      "upper_edge_nm": [
+        17398.68,
+        8082.0,
+        6238.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-1/jrc_sum159-1.zarr/recon-1/labels/groundtruth/crop25/all"
+    },
+    "jrc_sum159-1_crop26": {
+      "subset": "train",
+      "volume": "jrc_sum159-1",
+      "crop": "crop26",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.28,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        21047.82,
+        9143.0,
+        56963.0
+      ],
+      "lower_edge_nm": [
+        21046.68,
+        9142.0,
+        56962.0
+      ],
+      "upper_edge_nm": [
+        21958.68,
+        9942.0,
+        57762.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-1/jrc_sum159-1.zarr/recon-1/labels/groundtruth/crop26/all"
+    },
+    "jrc_sum159-1_crop80": {
+      "subset": "train",
+      "volume": "jrc_sum159-1",
+      "crop": "crop80",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.28,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        22338.3,
+        2543.0,
+        35439.0
+      ],
+      "lower_edge_nm": [
+        22337.16,
+        2542.0,
+        35438.0
+      ],
+      "upper_edge_nm": [
+        23249.16,
+        3342.0,
+        36238.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-1/jrc_sum159-1.zarr/recon-1/labels/groundtruth/crop80/all"
+    },
+    "jrc_sum159-1_crop81": {
+      "subset": "train",
+      "volume": "jrc_sum159-1",
+      "crop": "crop81",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.28,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        19319.58,
+        8839.0,
+        4371.0
+      ],
+      "lower_edge_nm": [
+        19318.440000000002,
+        8838.0,
+        4370.0
+      ],
+      "upper_edge_nm": [
+        20230.440000000002,
+        9638.0,
+        5170.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-1/jrc_sum159-1.zarr/recon-1/labels/groundtruth/crop81/all"
+    },
+    "jrc_sum159-1_crop82": {
+      "subset": "train",
+      "volume": "jrc_sum159-1",
+      "crop": "crop82",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.28,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        19287.66,
+        243.0,
+        19587.0
+      ],
+      "lower_edge_nm": [
+        19286.52,
+        242.0,
+        19586.0
+      ],
+      "upper_edge_nm": [
+        20198.52,
+        1042.0,
+        20386.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-1/jrc_sum159-1.zarr/recon-1/labels/groundtruth/crop82/all"
+    },
+    "jrc_sum159-1_crop83": {
+      "subset": "train",
+      "volume": "jrc_sum159-1",
+      "crop": "crop83",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.28,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        31367.1,
+        7471.0,
+        30211.0
+      ],
+      "lower_edge_nm": [
+        31365.96,
+        7470.0,
+        30210.0
+      ],
+      "upper_edge_nm": [
+        32277.96,
+        8270.0,
+        31010.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-1/jrc_sum159-1.zarr/recon-1/labels/groundtruth/crop83/all"
+    },
+    "jrc_sum159-1_crop84": {
+      "subset": "train",
+      "volume": "jrc_sum159-1",
+      "crop": "crop84",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.28,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        14691.18,
+        8935.0,
+        30079.0
+      ],
+      "lower_edge_nm": [
+        14690.04,
+        8934.0,
+        30078.0
+      ],
+      "upper_edge_nm": [
+        15602.04,
+        9734.0,
+        30878.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-1/jrc_sum159-1.zarr/recon-1/labels/groundtruth/crop84/all"
+    },
+    "jrc_sum159-4_crop186": {
+      "subset": "train",
+      "volume": "jrc_sum159-4",
+      "crop": "crop186",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        23254.0,
+        5998.0,
+        24726.0
+      ],
+      "lower_edge_nm": [
+        23252.0,
+        5996.0,
+        24724.0
+      ],
+      "upper_edge_nm": [
+        24852.0,
+        7596.0,
+        26324.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-4/jrc_sum159-4.zarr/recon-1/labels/groundtruth/crop186/all"
+    },
+    "jrc_sum159-4_crop187": {
+      "subset": "train",
+      "volume": "jrc_sum159-4",
+      "crop": "crop187",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        29046.0,
+        3750.0,
+        42982.0
+      ],
+      "lower_edge_nm": [
+        29044.0,
+        3748.0,
+        42980.0
+      ],
+      "upper_edge_nm": [
+        30644.0,
+        5348.0,
+        44580.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-4/jrc_sum159-4.zarr/recon-1/labels/groundtruth/crop187/all"
+    },
+    "jrc_sum159-4_crop188": {
+      "subset": "train",
+      "volume": "jrc_sum159-4",
+      "crop": "crop188",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        24806.0,
+        5142.0,
+        81430.0
+      ],
+      "lower_edge_nm": [
+        24804.0,
+        5140.0,
+        81428.0
+      ],
+      "upper_edge_nm": [
+        26404.0,
+        6740.0,
+        83028.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-4/jrc_sum159-4.zarr/recon-1/labels/groundtruth/crop188/all"
+    },
+    "jrc_sum159-4_crop189": {
+      "subset": "train",
+      "volume": "jrc_sum159-4",
+      "crop": "crop189",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        20974.0,
+        4318.0,
+        40230.0
+      ],
+      "lower_edge_nm": [
+        20972.0,
+        4316.0,
+        40228.0
+      ],
+      "upper_edge_nm": [
+        22572.0,
+        5916.0,
+        41828.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-4/jrc_sum159-4.zarr/recon-1/labels/groundtruth/crop189/all"
+    },
+    "jrc_sum159-4_crop201": {
+      "subset": "train",
+      "volume": "jrc_sum159-4",
+      "crop": "crop201",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        17998.0,
+        4182.0,
+        25510.0
+      ],
+      "lower_edge_nm": [
+        17996.0,
+        4180.0,
+        25508.0
+      ],
+      "upper_edge_nm": [
+        19596.0,
+        5780.0,
+        27108.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-4/jrc_sum159-4.zarr/recon-1/labels/groundtruth/crop201/all"
+    },
+    "jrc_sum159-4_crop202": {
+      "subset": "train",
+      "volume": "jrc_sum159-4",
+      "crop": "crop202",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        18462.0,
+        5758.0,
+        32838.0
+      ],
+      "lower_edge_nm": [
+        18460.0,
+        5756.0,
+        32836.0
+      ],
+      "upper_edge_nm": [
+        20060.0,
+        7356.0,
+        34436.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-4/jrc_sum159-4.zarr/recon-1/labels/groundtruth/crop202/all"
+    },
+    "jrc_sum159-4_crop203": {
+      "subset": "train",
+      "volume": "jrc_sum159-4",
+      "crop": "crop203",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        38646.0,
+        5526.0,
+        28302.0
+      ],
+      "lower_edge_nm": [
+        38644.0,
+        5524.0,
+        28300.0
+      ],
+      "upper_edge_nm": [
+        40244.0,
+        7124.0,
+        29900.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-4/jrc_sum159-4.zarr/recon-1/labels/groundtruth/crop203/all"
+    },
+    "jrc_sum159-4_crop206": {
+      "subset": "train",
+      "volume": "jrc_sum159-4",
+      "crop": "crop206",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        37518.0,
+        5566.0,
+        39038.0
+      ],
+      "lower_edge_nm": [
+        37516.0,
+        5564.0,
+        39036.0
+      ],
+      "upper_edge_nm": [
+        39116.0,
+        7164.0,
+        40636.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-4/jrc_sum159-4.zarr/recon-1/labels/groundtruth/crop206/all"
+    },
+    "jrc_sum159-4_crop208": {
+      "subset": "train",
+      "volume": "jrc_sum159-4",
+      "crop": "crop208",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        21798.0,
+        3678.0,
+        24798.0
+      ],
+      "lower_edge_nm": [
+        21796.0,
+        3676.0,
+        24796.0
+      ],
+      "upper_edge_nm": [
+        23396.0,
+        5276.0,
+        26396.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-4/jrc_sum159-4.zarr/recon-1/labels/groundtruth/crop208/all"
+    },
+    "jrc_sum159-4_crop209": {
+      "subset": "train",
+      "volume": "jrc_sum159-4",
+      "crop": "crop209",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        27502.0,
+        1502.0,
+        30998.0
+      ],
+      "lower_edge_nm": [
+        27500.0,
+        1500.0,
+        30996.0
+      ],
+      "upper_edge_nm": [
+        29100.0,
+        3100.0,
+        32596.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-4/jrc_sum159-4.zarr/recon-1/labels/groundtruth/crop209/all"
+    },
+    "jrc_sum159-4_crop210": {
+      "subset": "train",
+      "volume": "jrc_sum159-4",
+      "crop": "crop210",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        15134.0,
+        3806.0,
+        26462.0
+      ],
+      "lower_edge_nm": [
+        15132.0,
+        3804.0,
+        26460.0
+      ],
+      "upper_edge_nm": [
+        16732.0,
+        5404.0,
+        28060.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-4/jrc_sum159-4.zarr/recon-1/labels/groundtruth/crop210/all"
+    },
+    "jrc_sum159-4_crop212": {
+      "subset": "train",
+      "volume": "jrc_sum159-4",
+      "crop": "crop212",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        27398.0,
+        4270.0,
+        45246.0
+      ],
+      "lower_edge_nm": [
+        27396.0,
+        4268.0,
+        45244.0
+      ],
+      "upper_edge_nm": [
+        28996.0,
+        5868.0,
+        46844.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-4/jrc_sum159-4.zarr/recon-1/labels/groundtruth/crop212/all"
+    },
+    "jrc_sum159-4_crop213": {
+      "subset": "train",
+      "volume": "jrc_sum159-4",
+      "crop": "crop213",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        11134.0,
+        5518.0,
+        77878.0
+      ],
+      "lower_edge_nm": [
+        11132.0,
+        5516.0,
+        77876.0
+      ],
+      "upper_edge_nm": [
+        12732.0,
+        7116.0,
+        79476.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-4/jrc_sum159-4.zarr/recon-1/labels/groundtruth/crop213/all"
+    },
+    "jrc_sum159-4_crop216": {
+      "subset": "train",
+      "volume": "jrc_sum159-4",
+      "crop": "crop216",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        16534.0,
+        5126.0,
+        30958.0
+      ],
+      "lower_edge_nm": [
+        16532.0,
+        5124.0,
+        30956.0
+      ],
+      "upper_edge_nm": [
+        18132.0,
+        6724.0,
+        32556.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-4/jrc_sum159-4.zarr/recon-1/labels/groundtruth/crop216/all"
+    },
+    "jrc_sum159-4_crop217": {
+      "subset": "train",
+      "volume": "jrc_sum159-4",
+      "crop": "crop217",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        28398.0,
+        5198.0,
+        24798.0
+      ],
+      "lower_edge_nm": [
+        28396.0,
+        5196.0,
+        24796.0
+      ],
+      "upper_edge_nm": [
+        29996.0,
+        6796.0,
+        26396.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-4/jrc_sum159-4.zarr/recon-1/labels/groundtruth/crop217/all"
+    },
+    "jrc_sum159-4_crop218": {
+      "subset": "train",
+      "volume": "jrc_sum159-4",
+      "crop": "crop218",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        22166.0,
+        5982.0,
+        36526.0
+      ],
+      "lower_edge_nm": [
+        22164.0,
+        5980.0,
+        36524.0
+      ],
+      "upper_edge_nm": [
+        23764.0,
+        7580.0,
+        38124.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-4/jrc_sum159-4.zarr/recon-1/labels/groundtruth/crop218/all"
+    },
+    "jrc_ut21-1413-003_crop191": {
+      "subset": "train",
+      "volume": "jrc_ut21-1413-003",
+      "crop": "crop191",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        59734.0,
+        35398.0,
+        84998.0
+      ],
+      "lower_edge_nm": [
+        59732.0,
+        35396.0,
+        84996.0
+      ],
+      "upper_edge_nm": [
+        61332.0,
+        36996.0,
+        86596.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ut21-1413-003/jrc_ut21-1413-003.zarr/recon-1/labels/groundtruth/crop191/all"
+    },
+    "jrc_ut21-1413-003_crop192": {
+      "subset": "train",
+      "volume": "jrc_ut21-1413-003",
+      "crop": "crop192",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        55718.0,
+        36286.0,
+        48326.0
+      ],
+      "lower_edge_nm": [
+        55716.0,
+        36284.0,
+        48324.0
+      ],
+      "upper_edge_nm": [
+        57316.0,
+        37884.0,
+        49924.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ut21-1413-003/jrc_ut21-1413-003.zarr/recon-1/labels/groundtruth/crop192/all"
+    },
+    "jrc_ut21-1413-003_crop193": {
+      "subset": "train",
+      "volume": "jrc_ut21-1413-003",
+      "crop": "crop193",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        3454.0,
+        83438.0,
+        13398.0
+      ],
+      "lower_edge_nm": [
+        3452.0,
+        83436.0,
+        13396.0
+      ],
+      "upper_edge_nm": [
+        5052.0,
+        85036.0,
+        14996.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ut21-1413-003/jrc_ut21-1413-003.zarr/recon-1/labels/groundtruth/crop193/all"
+    },
+    "jrc_ut21-1413-003_crop195": {
+      "subset": "train",
+      "volume": "jrc_ut21-1413-003",
+      "crop": "crop195",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        35078.0,
+        61134.0,
+        34622.0
+      ],
+      "lower_edge_nm": [
+        35076.0,
+        61132.0,
+        34620.0
+      ],
+      "upper_edge_nm": [
+        36676.0,
+        62732.0,
+        36220.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ut21-1413-003/jrc_ut21-1413-003.zarr/recon-1/labels/groundtruth/crop195/all"
+    },
+    "jrc_ut21-1413-003_crop196": {
+      "subset": "train",
+      "volume": "jrc_ut21-1413-003",
+      "crop": "crop196",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        4774.0,
+        71958.0,
+        88030.0
+      ],
+      "lower_edge_nm": [
+        4772.0,
+        71956.0,
+        88028.0
+      ],
+      "upper_edge_nm": [
+        6372.0,
+        73556.0,
+        89628.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ut21-1413-003/jrc_ut21-1413-003.zarr/recon-1/labels/groundtruth/crop196/all"
+    },
+    "jrc_ut21-1413-003_crop197": {
+      "subset": "train",
+      "volume": "jrc_ut21-1413-003",
+      "crop": "crop197",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        82998.0,
+        53294.0,
+        80526.0
+      ],
+      "lower_edge_nm": [
+        82996.0,
+        53292.0,
+        80524.0
+      ],
+      "upper_edge_nm": [
+        84596.0,
+        54892.0,
+        82124.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ut21-1413-003/jrc_ut21-1413-003.zarr/recon-1/labels/groundtruth/crop197/all"
+    },
+    "jrc_ut21-1413-003_crop198": {
+      "subset": "train",
+      "volume": "jrc_ut21-1413-003",
+      "crop": "crop198",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        43494.0,
+        56182.0,
+        43830.0
+      ],
+      "lower_edge_nm": [
+        43492.0,
+        56180.0,
+        43828.0
+      ],
+      "upper_edge_nm": [
+        45092.0,
+        57780.0,
+        45428.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ut21-1413-003/jrc_ut21-1413-003.zarr/recon-1/labels/groundtruth/crop198/all"
+    },
+    "jrc_ut21-1413-003_crop199": {
+      "subset": "train",
+      "volume": "jrc_ut21-1413-003",
+      "crop": "crop199",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        97374.0,
+        29710.0,
+        79214.0
+      ],
+      "lower_edge_nm": [
+        97372.0,
+        29708.0,
+        79212.0
+      ],
+      "upper_edge_nm": [
+        98972.0,
+        31308.0,
+        80812.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ut21-1413-003/jrc_ut21-1413-003.zarr/recon-1/labels/groundtruth/crop199/all"
+    },
+    "jrc_ut21-1413-003_crop200": {
+      "subset": "train",
+      "volume": "jrc_ut21-1413-003",
+      "crop": "crop200",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        45006.0,
+        57998.0,
+        52438.0
+      ],
+      "lower_edge_nm": [
+        45004.0,
+        57996.0,
+        52436.0
+      ],
+      "upper_edge_nm": [
+        46604.0,
+        59596.0,
+        54036.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ut21-1413-003/jrc_ut21-1413-003.zarr/recon-1/labels/groundtruth/crop200/all"
+    },
+    "jrc_ut21-1413-003_crop214": {
+      "subset": "train",
+      "volume": "jrc_ut21-1413-003",
+      "crop": "crop214",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        34102.0,
+        2558.0,
+        39822.0
+      ],
+      "lower_edge_nm": [
+        34100.0,
+        2556.0,
+        39820.0
+      ],
+      "upper_edge_nm": [
+        35700.0,
+        4156.0,
+        41420.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ut21-1413-003/jrc_ut21-1413-003.zarr/recon-1/labels/groundtruth/crop214/all"
+    },
+    "jrc_ut21-1413-003_crop220": {
+      "subset": "train",
+      "volume": "jrc_ut21-1413-003",
+      "crop": "crop220",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        65022.0,
+        69630.0,
+        49118.0
+      ],
+      "lower_edge_nm": [
+        65020.0,
+        69628.0,
+        49116.0
+      ],
+      "upper_edge_nm": [
+        66620.0,
+        71228.0,
+        50716.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ut21-1413-003/jrc_ut21-1413-003.zarr/recon-1/labels/groundtruth/crop220/all"
+    },
+    "jrc_ut21-1413-003_crop222": {
+      "subset": "train",
+      "volume": "jrc_ut21-1413-003",
+      "crop": "crop222",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        99198.0,
+        35998.0,
+        50798.0
+      ],
+      "lower_edge_nm": [
+        99196.0,
+        35996.0,
+        50796.0
+      ],
+      "upper_edge_nm": [
+        100796.0,
+        37596.0,
+        52396.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ut21-1413-003/jrc_ut21-1413-003.zarr/recon-1/labels/groundtruth/crop222/all"
+    },
+    "jrc_ut21-1413-003_crop224": {
+      "subset": "train",
+      "volume": "jrc_ut21-1413-003",
+      "crop": "crop224",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        51494.0,
+        38054.0,
+        52454.0
+      ],
+      "lower_edge_nm": [
+        51492.0,
+        38052.0,
+        52452.0
+      ],
+      "upper_edge_nm": [
+        53092.0,
+        39652.0,
+        54052.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ut21-1413-003/jrc_ut21-1413-003.zarr/recon-1/labels/groundtruth/crop224/all"
+    },
+    "jrc_ut21-1413-003_crop225": {
+      "subset": "train",
+      "volume": "jrc_ut21-1413-003",
+      "crop": "crop225",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        93998.0,
+        32998.0,
+        88174.0
+      ],
+      "lower_edge_nm": [
+        93996.0,
+        32996.0,
+        88172.0
+      ],
+      "upper_edge_nm": [
+        95596.0,
+        34596.0,
+        89772.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ut21-1413-003/jrc_ut21-1413-003.zarr/recon-1/labels/groundtruth/crop225/all"
+    },
+    "jrc_ut21-1413-003_crop226": {
+      "subset": "train",
+      "volume": "jrc_ut21-1413-003",
+      "crop": "crop226",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        60998.0,
+        25758.0,
+        36398.0
+      ],
+      "lower_edge_nm": [
+        60996.0,
+        25756.0,
+        36396.0
+      ],
+      "upper_edge_nm": [
+        62596.0,
+        27356.0,
+        37996.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ut21-1413-003/jrc_ut21-1413-003.zarr/recon-1/labels/groundtruth/crop226/all"
+    },
+    "jrc_ut21-1413-003_crop227": {
+      "subset": "train",
+      "volume": "jrc_ut21-1413-003",
+      "crop": "crop227",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        128814.0,
+        34598.0,
+        46566.0
+      ],
+      "lower_edge_nm": [
+        128812.0,
+        34596.0,
+        46564.0
+      ],
+      "upper_edge_nm": [
+        130412.0,
+        36196.0,
+        48164.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ut21-1413-003/jrc_ut21-1413-003.zarr/recon-1/labels/groundtruth/crop227/all"
+    },
+    "jrc_ut21-1413-003_crop228": {
+      "subset": "train",
+      "volume": "jrc_ut21-1413-003",
+      "crop": "crop228",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        62534.0,
+        48398.0,
+        68558.0
+      ],
+      "lower_edge_nm": [
+        62532.0,
+        48396.0,
+        68556.0
+      ],
+      "upper_edge_nm": [
+        64132.0,
+        49996.0,
+        70156.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ut21-1413-003/jrc_ut21-1413-003.zarr/recon-1/labels/groundtruth/crop228/all"
+    },
+    "jrc_cos7-1a_crop236": {
+      "subset": "val",
+      "volume": "jrc_cos7-1a",
+      "crop": "crop236",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        10.0,
+        5690.0,
+        11750.0
+      ],
+      "lower_edge_nm": [
+        9.0,
+        5689.0,
+        11749.0
+      ],
+      "upper_edge_nm": [
+        809.0,
+        6489.0,
+        12549.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1a/jrc_cos7-1a.zarr/recon-1/labels/groundtruth/crop236/all"
+    },
+    "jrc_cos7-1b_crop235": {
+      "subset": "val",
+      "volume": "jrc_cos7-1b",
+      "crop": "crop235",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        118.0,
+        6560.0,
+        15904.0
+      ],
+      "lower_edge_nm": [
+        117.0,
+        6559.0,
+        15903.0
+      ],
+      "upper_edge_nm": [
+        917.0,
+        7359.0,
+        16703.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_cos7-1b/jrc_cos7-1b.zarr/recon-1/labels/groundtruth/crop235/all"
+    },
+    "jrc_ctl-id8-1_crop118": {
+      "subset": "val",
+      "volume": "jrc_ctl-id8-1",
+      "crop": "crop118",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.74,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        9106.29,
+        5771.0,
+        19259.0
+      ],
+      "lower_edge_nm": [
+        9105.42,
+        5770.0,
+        19258.0
+      ],
+      "upper_edge_nm": [
+        9801.42,
+        6570.0,
+        20058.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ctl-id8-1/jrc_ctl-id8-1.zarr/recon-1/labels/groundtruth/crop118/all"
+    },
+    "jrc_fly-mb-1a_crop121": {
+      "subset": "val",
+      "volume": "jrc_fly-mb-1a",
+      "crop": "crop121",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        30707.0,
+        14959.0,
+        24999.0
+      ],
+      "lower_edge_nm": [
+        30706.0,
+        14958.0,
+        24998.0
+      ],
+      "upper_edge_nm": [
+        31506.0,
+        15758.0,
+        25798.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_fly-mb-1a/jrc_fly-mb-1a.zarr/recon-1/labels/groundtruth/crop121/all"
+    },
+    "jrc_fly-vnc-1_crop174": {
+      "subset": "val",
+      "volume": "jrc_fly-vnc-1",
+      "crop": "crop174",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        6535.0,
+        7671.0,
+        5139.0
+      ],
+      "lower_edge_nm": [
+        6534.0,
+        7670.0,
+        5138.0
+      ],
+      "upper_edge_nm": [
+        7334.0,
+        8470.0,
+        5938.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_fly-vnc-1/jrc_fly-vnc-1.zarr/recon-1/labels/groundtruth/crop174/all"
+    },
+    "jrc_hela-2_crop15": {
+      "subset": "val",
+      "volume": "jrc_hela-2",
+      "crop": "crop15",
+      "shape": [
+        128,
+        300,
+        300
+      ],
+      "scale_nm": [
+        2.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        23107.09,
+        1779.0,
+        24519.0
+      ],
+      "lower_edge_nm": [
+        23105.78,
+        1778.0,
+        24518.0
+      ],
+      "upper_edge_nm": [
+        23441.14,
+        2378.0,
+        25118.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-2/jrc_hela-2.zarr/recon-1/labels/groundtruth/crop15/all"
+    },
+    "jrc_hela-3_crop50": {
+      "subset": "val",
+      "volume": "jrc_hela-3",
+      "crop": "crop50",
+      "shape": [
+        512,
+        512,
+        512
+      ],
+      "scale_nm": [
+        1.62,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        21405.87,
+        327.0,
+        37091.0
+      ],
+      "lower_edge_nm": [
+        21405.059999999998,
+        326.0,
+        37090.0
+      ],
+      "upper_edge_nm": [
+        22234.499999999996,
+        1350.0,
+        38114.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_hela-3/jrc_hela-3.zarr/recon-1/labels/groundtruth/crop50/all"
+    },
+    "jrc_jurkat-1_crop126": {
+      "subset": "val",
+      "volume": "jrc_jurkat-1",
+      "crop": "crop126",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        1.72,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        12727.14,
+        5187.0,
+        20559.0
+      ],
+      "lower_edge_nm": [
+        12726.279999999999,
+        5186.0,
+        20558.0
+      ],
+      "upper_edge_nm": [
+        13414.279999999999,
+        5986.0,
+        21358.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_jurkat-1/jrc_jurkat-1.zarr/recon-1/labels/groundtruth/crop126/all"
+    },
+    "jrc_macrophage-2_crop31": {
+      "subset": "val",
+      "volume": "jrc_macrophage-2",
+      "crop": "crop31",
+      "shape": [
+        300,
+        300,
+        300
+      ],
+      "scale_nm": [
+        1.68,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        29667.96,
+        3299.0,
+        16079.0
+      ],
+      "lower_edge_nm": [
+        29667.12,
+        3298.0,
+        16078.0
+      ],
+      "upper_edge_nm": [
+        30171.12,
+        3898.0,
+        16678.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_macrophage-2/jrc_macrophage-2.zarr/recon-1/labels/groundtruth/crop31/all"
+    },
+    "jrc_mus-kidney_crop164": {
+      "subset": "val",
+      "volume": "jrc_mus-kidney",
+      "crop": "crop164",
+      "shape": [
+        200,
+        200,
+        200
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        106446.0,
+        39982.0,
+        35582.0
+      ],
+      "lower_edge_nm": [
+        106444.0,
+        39980.0,
+        35580.0
+      ],
+      "upper_edge_nm": [
+        107244.0,
+        40780.0,
+        36380.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-kidney/jrc_mus-kidney.zarr/recon-1/labels/groundtruth/crop164/all"
+    },
+    "jrc_mus-liver-zon-1_crop266": {
+      "subset": "val",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop266",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        220334.0,
+        91822.0,
+        89286.0
+      ],
+      "lower_edge_nm": [
+        220332.0,
+        91820.0,
+        89284.0
+      ],
+      "upper_edge_nm": [
+        221932.0,
+        93420.0,
+        90884.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop266/all"
+    },
+    "jrc_mus-liver-zon-1_crop268": {
+      "subset": "val",
+      "volume": "jrc_mus-liver-zon-1",
+      "crop": "crop268",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        211294.0,
+        99382.0,
+        50174.0
+      ],
+      "lower_edge_nm": [
+        211292.0,
+        99380.0,
+        50172.0
+      ],
+      "upper_edge_nm": [
+        212892.0,
+        100980.0,
+        51772.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-1/jrc_mus-liver-zon-1.zarr/recon-1/labels/groundtruth/crop268/all"
+    },
+    "jrc_mus-liver-zon-2_crop342": {
+      "subset": "val",
+      "volume": "jrc_mus-liver-zon-2",
+      "crop": "crop342",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        207006.0,
+        138214.0,
+        36294.0
+      ],
+      "lower_edge_nm": [
+        207004.0,
+        138212.0,
+        36292.0
+      ],
+      "upper_edge_nm": [
+        208604.0,
+        139812.0,
+        37892.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver-zon-2/jrc_mus-liver-zon-2.zarr/recon-1/labels/groundtruth/crop342/all"
+    },
+    "jrc_mus-liver_crop125": {
+      "subset": "val",
+      "volume": "jrc_mus-liver",
+      "crop": "crop125",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        32126.0,
+        83302.0,
+        60870.0
+      ],
+      "lower_edge_nm": [
+        32124.0,
+        83300.0,
+        60868.0
+      ],
+      "upper_edge_nm": [
+        33724.0,
+        84900.0,
+        62468.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_mus-liver/jrc_mus-liver.zarr/recon-1/labels/groundtruth/crop125/all"
+    },
+    "jrc_sum159-1_crop20": {
+      "subset": "val",
+      "volume": "jrc_sum159-1",
+      "crop": "crop20",
+      "shape": [
+        170,
+        400,
+        400
+      ],
+      "scale_nm": [
+        2.28,
+        2.0,
+        2.0
+      ],
+      "translation_nm": [
+        25078.86,
+        2979.0,
+        18819.0
+      ],
+      "lower_edge_nm": [
+        25077.72,
+        2978.0,
+        18818.0
+      ],
+      "upper_edge_nm": [
+        25465.32,
+        3778.0,
+        19618.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-1/jrc_sum159-1.zarr/recon-1/labels/groundtruth/crop20/all"
+    },
+    "jrc_sum159-4_crop219": {
+      "subset": "val",
+      "volume": "jrc_sum159-4",
+      "crop": "crop219",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        22902.0,
+        6174.0,
+        28902.0
+      ],
+      "lower_edge_nm": [
+        22900.0,
+        6172.0,
+        28900.0
+      ],
+      "upper_edge_nm": [
+        24500.0,
+        7772.0,
+        30500.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_sum159-4/jrc_sum159-4.zarr/recon-1/labels/groundtruth/crop219/all"
+    },
+    "jrc_ut21-1413-003_crop190": {
+      "subset": "val",
+      "volume": "jrc_ut21-1413-003",
+      "crop": "crop190",
+      "shape": [
+        400,
+        400,
+        400
+      ],
+      "scale_nm": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "translation_nm": [
+        5646.0,
+        72718.0,
+        40822.0
+      ],
+      "lower_edge_nm": [
+        5644.0,
+        72716.0,
+        40820.0
+      ],
+      "upper_edge_nm": [
+        7244.0,
+        74316.0,
+        42420.0
+      ],
+      "metadata": "/projects/weilab/liupeng/data/raw/cellmap/data/jrc_ut21-1413-003/jrc_ut21-1413-003.zarr/recon-1/labels/groundtruth/crop190/all"
+    }
+  }
+}

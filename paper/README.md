@@ -1,57 +1,44 @@
-# Paper scripts: AnchorSlot (TMI submission)
+# Paper Scripts: AnchorSlot (IEEE TMI Submission)
 
-Scripts behind the figures, tables, and robustness analyses of
-"AnchorSlot: Role-Structured Supervision for Pan-Organelle Segmentation in Volume EM".
-The model code is in `nnunetv2/` of this repository; this folder only reproduces the paper's figures and analyses
-from trained-model predictions.
+Scripts reproducing the figures, tables, reconstruction variants, and statistical analyses of
+**"AnchorSlot: Role-Structured Supervision for Pan-Organelle Segmentation in Volume EM"**.
 
 All scoring uses the official CellMap evaluator
-([janelia-cellmap/cellmap-segmentation-challenge](https://github.com/janelia-cellmap/cellmap-segmentation-challenge),
-commit `0300239`) on the 17 internal validation crops
-(15, 20, 31, 50, 118, 121, 125, 126, 164, 174, 190, 219, 235, 236, 266, 268, 342).
+([`janelia-cellmap/cellmap-segmentation-challenge`](https://github.com/janelia-cellmap/cellmap-segmentation-challenge),
+commit `0300239`) on the **16-crop ROI-audited primary validation benchmark** (and the 17-crop split retained for sensitivity checks; see [`configs/cellmap/source_roi_audit_16crop.json`](../configs/cellmap/source_roi_audit_16crop.json)).
 
-## Paper components and their code
+## Paper Components and Code Mapping
 
-| Paper component | Code |
+| Paper Component | Code Location |
 |---|---|
-| AnchorSlot (nnU-Net / PlainConvUNet) | `nnunetv2/training/nnUNetTrainer/variants/structured_conditional/trainer_structured_conditional_er_dynamic.py`, `structured_loss_er_dynamic.py`, `dataloader_structured_conditional_er_dynamic.py`, `label_mapping_er_dynamic.py`, `network_structured_conditional.py` |
-| AnchorSlot (MedNeXt) / flat MedNeXt | `trainer_structured_conditional_er_dynamic_mednext.py`, `trainer_mednext_32out_no_cond.py` |
-| Leaderboard model (extra reweighting stage) | `trainer_structured_conditional_er_dynamic_ddw.py`, `structured_loss_er_dynamic_ddw.py`, `nnunetv2/training/loss/dynamic_distribution_weighting.py` |
-| Label-organization and earlier loss variants | `trainer_structured_conditional_no_slot3*.py` |
-| Synapse CT | `trainer_synapse_reconstruction.py` (`nnUNetTrainerSynapseReconstructionScreen`), `synapse_reconstruction.py`; run drivers `scripts/run_synapse_fold0_followup.py` (arm `lr003`), `scripts/continue_synapse_masked.py`, `scripts/snapshot_synapse_checkpoints.py` |
-| Binary / three-class conditional baselines | `nnunetv2/training/nnUNetTrainer/variants/partial_label/nnUNetTrainerConditionalFiLM.py`, `nnUNetTrainerConditionalFiLMTernary.py` |
-| Class-balanced flat baseline | `nnunetv2/training/nnUNetTrainer/nnUNetTrainerRalph.py` |
-| Inference with query sweep and reconstruction | `scripts/predict_structured_conditional.py --group_id all`, `inference_structured_conditional_er_dynamic.py` |
-| Encoder-cached inference (Section V-G) | `scripts/predict_structured_conditional.py --group_id all --cache_encoder`; tests in `nnunetv2/tests/test_cached_encoder_inference.py` |
-| Computational cost (Table VIII) | `paper/efficiency/`, `paper/figures/make_cost_table.py` |
-| Official-protocol evaluation | `scripts/cellmap_evaluation_pipeline.py`, `nnunetv2/evaluation/cellmap_challenge.py` |
+| AnchorSlot (PlainConvUNet, no group head) | `nnunetv2/training/nnUNetTrainer/variants/structured_conditional/trainer_structured_conditional_er_dynamic.py`, `structured_loss_er_dynamic.py`, `dataloader_structured_conditional_er_dynamic.py`, `label_mapping_er_dynamic.py`, `network_structured_conditional.py` |
+| AnchorSlot + Group Head ($\lambda_{\text{gh}}=0.3$) | `trainer_structured_conditional_er_dynamic_group_head.py`, `scripts/predict_dump_group_head.py`, `scripts/merge_group_head.py` |
+| Non-query-as-background factorial arm (`other -> bg`) | `trainer_structured_conditional_er_dynamic_group_head_nqbg.py`, `paper/reconstruction/decode_factorial_controls.py` |
+| Controlled training ablations (`Pos100`, `Unmasked`, `Unweighted`) | `trainer_structured_conditional_er_dynamic_ablations.py`, `nnunetv2/tests/test_anchorslot_training_ablations.py` |
+| Two-Stage & Consensus-Veto reconstruction (`TS_w0.5`, `TS_w0.5_g0.75_veto`) | `paper/reconstruction/decode_consensus_v2.py`, `paper/reconstruction/evaluate_cv5_consensus.py`, `paper/reconstruction/test_decode_consensus_v2.py` |
+| AnchorSlot (MedNeXt-B) / Flat MedNeXt-B | `trainer_structured_conditional_er_dynamic_mednext.py`, `trainer_mednext_32out_no_cond.py` |
+| Leaderboard model (extra DDW reweighting stage) | `trainer_structured_conditional_er_dynamic_ddw.py`, `structured_loss_er_dynamic_ddw.py`, `nnunetv2/training/loss/dynamic_distribution_weighting.py` |
+| Flat nnU-Net / Class-Balanced Flat / Flat + Group Head | `nnunetv2/training/nnUNetTrainer/nnUNetTrainerRalph.py`, `nnUNetTrainerRalphGroupHead.py` |
+| Binary / Ternary FiLM baselines | `nnunetv2/training/nnUNetTrainer/variants/partial_label/nnUNetTrainerConditionalFiLM.py`, `nnUNetTrainerConditionalFiLMTernary.py` |
+| Adapted literature baselines (CoNeMOS, UniSeg, MISO-style) | `nnunetv2/training/nnUNetTrainer/nnUNetTrainerLiterature.py`, `literature_baselines/`, `scripts/predict_literature_baselines.py`, `nnunetv2/tests/test_literature_baselines.py` |
+| Adapted DoDNet, Blob Loss, HSSN, SALT baselines | `nnunetv2/training/nnUNetTrainer/variants/comparison_baselines/`, `scripts/run_comparison_baseline.py`, `nnunetv2/tests/test_comparison_*.py` |
+| External transfer on Synapse Abdominal CT | `trainer_synapse_reconstruction.py`, `synapse_reconstruction.py`, `scripts/run_synapse_fold0_followup.py` |
+| Encoder-cached inference ($1.47\times$ speedup) | `scripts/predict_structured_conditional.py --group_id all --cache_encoder`, `nnunetv2/tests/test_cached_encoder_inference.py` |
+| Computational cost & runtime profiling | `paper/efficiency/`, `paper/figures/make_cost_table.py` |
+| Official-protocol CellMap evaluation | `scripts/cellmap_evaluation_pipeline.py`, `nnunetv2/evaluation/cellmap_challenge.py` |
 
-## Scripts in this folder
+## Subdirectories in `paper/`
 
-`figures/` renders Figs. 1 and 3–6 and generates Tables IV and the robustness and confusion tables.
-`analyses/` computes:
-- the paired crop bootstrap, few-object sensitivity, and organelle count and volume errors (`robustness_stats.py`);
-- the confusion analysis for all methods (`confusion_extended.py`);
-- the uniform size-filter check (`uniform_filter.py`).
-
-`efficiency/` measures the cost table on one GPU:
-- `efficiency_metrics.py`: parameters, FLOPs per $160^3$ tile (`torch.utils.flop_counter`) and peak training memory
-  of each trainer's `train_step` on synthetic batches;
-- `benchmark_inference.py`: network and total time per validation volume for flat, class-balanced flat, per-query
-  AnchorSlot and encoder-cached AnchorSlot, with a voxel-wise check that the cached and per-query label maps agree;
-- `single_group_timing.py`: time of one query group per volume;
-- `methods.py`: the checkpoints and training environments.
-
-`figures/make_cost_table.py` writes the table from their JSON outputs.
-
-With `--cache_encoder`, each mirrored tile is encoded once and decoded for all 13 query groups, since FiLM conditions
-only the decoder. The logits are identical to the default per-query passes (tests and a GPU check on all 17
-validation volumes) and inference is about 1.5 times faster. The price is one fp32 logit accumulator per group on the
-GPU (about 35 GB for a 400^3 volume); groups are split into chunks automatically when they do not fit.
-
-`figures/fig02_method.tex` is the standalone TikZ source of Fig. 2; compile it with XeLaTeX.
-
-These scripts were written for our cluster layout. Paths to predictions, the locked ground-truth store, and the
-evaluator checkout are absolute (`/projects/weilab/...`) and must be adapted. `analyses/confusion_extended.py` and `figures/make_label_figures.py` read the
-validation label maps and EM images from the environment variables `CELLMAP_LABELS_TS` and `CELLMAP_IMAGES_TS`. The figure scripts also expect to live
-in `scripts/` of the manuscript folder, which contains `figures/` and `tables/`.
+- **`reconstruction/`**:
+  - `decode_consensus_v2.py`: Implements `Gmix0.5` (Eq. 7), Two-Stage Hierarchical Bayes Decoding (`TS_w0.5`, Eq. 8), and Dual-Weight Consensus-Veto Hysteresis (`TS_w0.5_g0.75_veto`, Eqs. 9–10).
+  - `evaluate_cv5_consensus.py`: Evaluates two-stage and consensus-veto decoding across the 5-fold cross-validation dump (`folds 0..4`).
+  - `decode_factorial_controls.py` & `decode_lib.py`: Offline decoder for the representation $\times$ group-head factorial and $(w, A)$ hysteresis grid.
+- **`analyses/`**:
+  - `paper_numbers.py`: Recomputes every number in the manuscript on the 16-crop primary benchmark and 17-crop sensitivity split from per-crop official CellMap evaluation JSONs.
+  - `reliability_stats.py` & `robustness_stats.py`: Paired crop bootstrap confidence intervals ($B=10{,}000$), Wilcoxon signed-rank tests, absent-class hallucination audits on 82 object-free validation pairs, and count/volume calibration errors.
+  - `confusion_extended.py`: Block-normalized confusion matrices and ribo/cyto confusion attribution.
+  - `uniform_filter.py`: Uniform minimum-component-size post-processing sweep across methods.
+- **`figures/`**:
+  - `make_fig01.py`, `make_fig02_thumbs.py`, `fig02_method.tex`, `make_figures.py`, `make_label_figures.py`, `make_cost_table.py`: Generates Figs. 1–7 and LaTeX tables.
+- **`efficiency/`**:
+  - `efficiency_metrics.py`, `benchmark_inference.py`, `single_group_timing.py`, `methods.py`: Measures parameter count, FLOPs per $160^3$ tile, peak GPU training memory, and per-volume inference wall-clock times.
